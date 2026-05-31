@@ -58,29 +58,8 @@ var lyr_unitaterritorialisovracomunali_2 = new ol.layer.Vector({
                 source:jsonSource_unitaterritorialisovracomunali_2, 
                 style: style_unitaterritorialisovracomunali_2,
                 popuplayertitle: 'unita-territoriali-sovracomunali',
-                interactive: true,
-    title: 'unita-territoriali-sovracomunali<br />\
-    <img src="styles/legend/unitaterritorialisovracomunali_2_0.png" /> Abruzzo<br />\
-    <img src="styles/legend/unitaterritorialisovracomunali_2_1.png" /> Basilicata<br />\
-    <img src="styles/legend/unitaterritorialisovracomunali_2_2.png" /> Calabria<br />\
-    <img src="styles/legend/unitaterritorialisovracomunali_2_3.png" /> Campania<br />\
-    <img src="styles/legend/unitaterritorialisovracomunali_2_4.png" /> Emilia-Romagna<br />\
-    <img src="styles/legend/unitaterritorialisovracomunali_2_5.png" /> Friuli-Venezia Giulia<br />\
-    <img src="styles/legend/unitaterritorialisovracomunali_2_6.png" /> Lazio<br />\
-    <img src="styles/legend/unitaterritorialisovracomunali_2_7.png" /> Liguria<br />\
-    <img src="styles/legend/unitaterritorialisovracomunali_2_8.png" /> Lombardia<br />\
-    <img src="styles/legend/unitaterritorialisovracomunali_2_9.png" /> Marche<br />\
-    <img src="styles/legend/unitaterritorialisovracomunali_2_10.png" /> Molise<br />\
-    <img src="styles/legend/unitaterritorialisovracomunali_2_11.png" /> Piemonte<br />\
-    <img src="styles/legend/unitaterritorialisovracomunali_2_12.png" /> Puglia<br />\
-    <img src="styles/legend/unitaterritorialisovracomunali_2_13.png" /> Sardegna<br />\
-    <img src="styles/legend/unitaterritorialisovracomunali_2_14.png" /> Sicilia<br />\
-    <img src="styles/legend/unitaterritorialisovracomunali_2_15.png" /> Toscana<br />\
-    <img src="styles/legend/unitaterritorialisovracomunali_2_16.png" /> Trentino-Alto Adige/Südtirol<br />\
-    <img src="styles/legend/unitaterritorialisovracomunali_2_17.png" /> Umbria<br />\
-    <img src="styles/legend/unitaterritorialisovracomunali_2_18.png" /> Valle d\'Aosta/Vallée d\'Aoste<br />\
-    <img src="styles/legend/unitaterritorialisovracomunali_2_19.png" /> Veneto<br />\
-    <img src="styles/legend/unitaterritorialisovracomunali_2_20.png" /> <br />' });
+                interactive: true
+});
 
 var format_museiguidavol2_4 = new ol.format.GeoJSON();
 var features_museiguidavol2_4 = format_museiguidavol2_4.readFeatures(json_museiguidavol2_4, 
