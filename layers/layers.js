@@ -24,28 +24,8 @@ var lyr_regioni_1 = new ol.layer.Vector({
                 style: style_regioni_1,
                 popuplayertitle: 'regioni',
                 interactive: true,
-    title: 'regioni<br />\
-    <img src="styles/legend/regioni_1_0.png" /> Abruzzo<br />\
-    <img src="styles/legend/regioni_1_1.png" /> Basilicata<br />\
-    <img src="styles/legend/regioni_1_2.png" /> Calabria<br />\
-    <img src="styles/legend/regioni_1_3.png" /> Campania<br />\
-    <img src="styles/legend/regioni_1_4.png" /> Emilia-Romagna<br />\
-    <img src="styles/legend/regioni_1_5.png" /> Friuli-Venezia Giulia<br />\
-    <img src="styles/legend/regioni_1_6.png" /> Lazio<br />\
-    <img src="styles/legend/regioni_1_7.png" /> Liguria<br />\
-    <img src="styles/legend/regioni_1_8.png" /> Lombardia<br />\
-    <img src="styles/legend/regioni_1_9.png" /> Marche<br />\
-    <img src="styles/legend/regioni_1_10.png" /> Molise<br />\
-    <img src="styles/legend/regioni_1_11.png" /> Piemonte<br />\
-    <img src="styles/legend/regioni_1_12.png" /> Puglia<br />\
-    <img src="styles/legend/regioni_1_13.png" /> Sardegna<br />\
-    <img src="styles/legend/regioni_1_14.png" /> Sicilia<br />\
-    <img src="styles/legend/regioni_1_15.png" /> Toscana<br />\
-    <img src="styles/legend/regioni_1_16.png" /> Trentino-Alto Adige/Südtirol<br />\
-    <img src="styles/legend/regioni_1_17.png" /> Umbria<br />\
-    <img src="styles/legend/regioni_1_18.png" /> Valle d\'Aosta/Vallée d\'Aoste<br />\
-    <img src="styles/legend/regioni_1_19.png" /> Veneto<br />\
-    <img src="styles/legend/regioni_1_20.png" /> <br />' });
+                title: 'Regioni' // <--- Lasciamo solo il titolo pulito qui!
+});
 var format_unitaterritorialisovracomunali_2 = new ol.format.GeoJSON();
 var features_unitaterritorialisovracomunali_2 = format_unitaterritorialisovracomunali_2.readFeatures(json_unitaterritorialisovracomunali_2, 
             {dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857'});
@@ -58,7 +38,8 @@ var lyr_unitaterritorialisovracomunali_2 = new ol.layer.Vector({
                 source:jsonSource_unitaterritorialisovracomunali_2, 
                 style: style_unitaterritorialisovracomunali_2,
                 popuplayertitle: 'unita-territoriali-sovracomunali',
-                interactive: true
+                interactive: true,
+                title: 'Provincie (UTS)' // <--- Lasciamo solo il titolo pulito qui!
 });
 
 var format_museiguidavol2_4 = new ol.format.GeoJSON();
