@@ -37,7 +37,7 @@ var lyr_unitaterritorialisovracomunali_2 = new ol.layer.Vector({
                 declutter: false,
                 source:jsonSource_unitaterritorialisovracomunali_2, 
                 style: style_unitaterritorialisovracomunali_2,
-                popuplayertitle: 'unita-territoriali-sovracomunali',
+                popuplayertitle: 'Provincie',
                 interactive: true,
                 title: 'Provincie (UTS)' // <--- Lasciamo solo il titolo pulito qui!
 });
@@ -53,7 +53,7 @@ var lyr_museiguidavol2_4 = new ol.layer.Vector({
                 declutter: false,
                 source:jsonSource_museiguidavol2_4, 
                 style: style_museiguidavol2_4,
-                popuplayertitle: 'museiguidavol2',
+                popuplayertitle: 'Musei',
                 interactive: true,
                 title: '<img src="styles/legend/museiguidavol2_4.png" /> museiguidavol2'
             });
@@ -72,9 +72,9 @@ var lyr_sitiguidavol2_5 = new ol.layer.Vector({
                 declutter: false,
                 source:cluster_sitiguidavol2_5, 
                 style: style_sitiguidavol2_5,
-                popuplayertitle: 'sitiguidavol2',
+                popuplayertitle: 'Siti',
                 interactive: true,
-                title: 'sitiguidavol2'
+                title: 'Siti'
             });
 var lyr_IdrografiaReticoloidrografico_6 = new ol.layer.Tile({
                             source: new ol.source.TileWMS(({
