@@ -10,7 +10,7 @@ var confiniGradi = [4.0, 34.0, 21.0, 48.5];
 var confiniBloccatiItalia = ol.extent.applyTransform(confiniGradi, ol.proj.getTransform('EPSG:4326', 'EPSG:3857'));
 
 // 💡 REGOLA QUI LO ZOOM FINALE PER IL "TUTTO INCLUSO"
-var zoomDesktopScelto = 5.6;  // Valore ideale per vedere l'Italia intera su monitor PC
+var zoomDesktopScelto = 1;  // Valore ideale per vedere l'Italia intera su monitor PC
 var zoomMobileScelto  = 4.6;  // Valore ideale per vedere l'Italia intera in verticale su Smartphone
 
 var isSmallScreen = window.innerWidth < 650;
