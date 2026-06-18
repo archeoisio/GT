@@ -64,6 +64,8 @@ var jsonSource_sitiguidavol2_5 = new ol.source.Vector({
     attributions: ' ',
 });
 jsonSource_sitiguidavol2_5.addFeatures(features_sitiguidavol2_5);
+
+// --- BLOCCO CLUSTER CORRETTO E UNIFICATO ---
 cluster_sitiguidavol2_5 = new ol.source.Cluster({
     distance: 30,
     source: jsonSource_sitiguidavol2_5,
@@ -75,7 +77,6 @@ cluster_sitiguidavol2_5 = new ol.source.Cluster({
         return feature.getGeometry();
     },
     
-    // CORRETTO: Adesso riceve sia la geometria nativa (point) che l'array di elementi (features)
     createCluster: function(point, features) {
         if (!features || features.length === 0) {
             return new ol.Feature({
@@ -84,7 +85,6 @@ cluster_sitiguidavol2_5 = new ol.source.Cluster({
             });
         }
         
-        // Prendiamo la regione del primo elemento valido del gruppo
         var primoPunto = features[0];
         if (!primoPunto || typeof primoPunto.get !== 'function') {
             return new ol.Feature({
@@ -95,7 +95,6 @@ cluster_sitiguidavol2_5 = new ol.source.Cluster({
         
         var regioneTarget = primoPunto.get('Regione');
         
-        // Filtriamo le feature mantenendo solo quelle della stessa regione
         var featuresFiltrate = features.filter(function(f) {
             return f && typeof f.get === 'function' && f.get('Regione') === regioneTarget;
         });
@@ -107,7 +106,6 @@ cluster_sitiguidavol2_5 = new ol.source.Cluster({
             });
         }
         
-        // Ricalcoliamo il centro basandoci esclusivamente sui punti filtrati della stessa regione
         var x = 0, y = 0;
         var puntiValidi = 0;
         
@@ -124,26 +122,13 @@ cluster_sitiguidavol2_5 = new ol.source.Cluster({
         
         var centroCluster = puntiValidi > 0 ? [x / puntiValidi, y / puntiValidi] : point.getCoordinates();
         
-        // Restituiamo la feature finale strutturata esattamente come vuole OpenLayers
         return new ol.Feature({
             geometry: new ol.geom.Point(centroCluster),
             features: featuresFiltrate
         });
     }
-});        
-        // Se nessun punto aveva coordinate valide, usa il fallback nativo per non rompere il rendering
-        if (puntiValidi === 0) {
-            return ol.source.Cluster.prototype.createCluster.call(this, featuresFiltrate);
-        }
-        
-        var centroCluster = [x / puntiValidi, y / puntiValidi];
-        
-        return new ol.Feature({
-            geometry: new ol.geom.Point(centroCluster),
-            features: featuresFiltrate
-        });
-    }
-});
+}); // <-- Chiusura corretta del cluster, senza duplicati!
+
 var lyr_sitiguidavol2_5 = new ol.layer.Vector({
     declutter: false,
     source: cluster_sitiguidavol2_5, 
@@ -155,7 +140,7 @@ var lyr_sitiguidavol2_5 = new ol.layer.Vector({
 
 // --- NUOVO LAYER: sititecnicopratica ---
 var format_sititecnicopratica = new ol.format.GeoJSON();
-var features_sititecnicopratica = format_sititecnicopratica.readFeatures(json_tecnicopratica_5, // <-- CORRETTO
+var features_sititecnicopratica = format_sititecnicopratica.readFeatures(json_tecnicopratica_5, 
     {dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857'});
 var jsonSource_sititecnicopratica = new ol.source.Vector({
     attributions: ' ',
@@ -164,12 +149,11 @@ jsonSource_sititecnicopratica.addFeatures(features_sititecnicopratica);
 var lyr_sititecnicopratica = new ol.layer.Vector({
     declutter: false,
     source: jsonSource_sititecnicopratica, 
-    style: style_sititecnicopratica, // <--- Ricorda di definire questo stile nel file degli stili!
+    style: style_sititecnicopratica, 
     popuplayertitle: 'Siti Tecnico Pratica',
     interactive: true,
     title: 'Siti Tecnico Pratica'
 });
-// ----------------------------------------
 
 var lyr_IdrografiaReticoloidrografico_6 = new ol.layer.Tile({
     source: new ol.source.TileWMS(({
@@ -191,16 +175,14 @@ var lyr_IdrografiaReticoloidrografico_6 = new ol.layer.Tile({
 
 wms_layers.push([lyr_IdrografiaReticoloidrografico_6, 1]);
 
-// Visibilità (Impostato su true)
 lyr_XYZLayer_0.setVisible(true);
 lyr_regioni_1.setVisible(true);
 lyr_unitaterritorialisovracomunali_2.setVisible(true);
 lyr_museiguidavol2_4.setVisible(true);
 lyr_sitiguidavol2_5.setVisible(true);
-lyr_sititecnicopratica.setVisible(true); // <--- Aggiunto qui
+lyr_sititecnicopratica.setVisible(true); 
 lyr_IdrografiaReticoloidrografico_6.setVisible(false);
 
-// Lista dei Layers (Aggiunto il nuovo layer nell'array)
 var layersList = [lyr_XYZLayer_0, lyr_regioni_1, lyr_unitaterritorialisovracomunali_2, lyr_museiguidavol2_4, lyr_sitiguidavol2_5, lyr_sititecnicopratica, lyr_IdrografiaReticoloidrografico_6];
 
 lyr_regioni_1.set('fieldAliases', {'fid': 'fid', 'pkuid': 'pkuid', 'cod_rip': 'cod_rip', 'cod_reg': 'cod_reg', 'den_reg': 'den_reg', 'shape_leng': 'shape_leng', 'shape_area': 'shape_area', 'den_rip': 'den_rip', 'ontopia': 'ontopia', });
