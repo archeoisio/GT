@@ -15,7 +15,7 @@ var json_tecnicopratica_5 = {
         "Regione": "Abruzzo",
         "ID_sitoxre": "1",
         "ID_sitotot": "1",
-        "Sito/Museo": "Alba Fucens",
+        "Sito/Museo": "Alba Fucens TP",
         "Comune/Loc": "Massa d'Albe",
         "Provincia": "L'Aquila",
         "Sezione": "I",
