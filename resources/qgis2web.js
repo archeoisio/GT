@@ -1,12 +1,12 @@
 // =========================================================================
-// 1. CONFIGURAZIONE DELLA VISTA E ZOOM SELEZIONABILI (CON CONFINI ALLA VISTA)
+// 1. CONFIGURAZIONE DELLA VISTA E ZOOM SELEZIONABILI
 // =========================================================================
 // Coordinate del centro mappa (Centro Italia in EPSG:3857)
 var centroMappa = [1400000.000000, 5200000.000000]; 
 
 // Scegli qui lo zoom iniziale libero per i due dispositivi:
 var zoomDesktopScelto = 5.8;  // Valore ottimale per PC
-var zoomMobileScelto  = 5;  // Valore ottimale per Smartphone/Tablet
+var zoomMobileScelto  = 5.0;  // Valore ottimale per Smartphone/Tablet
 
 var isSmallScreen = window.innerWidth < 650;
 var zoomFinale = isSmallScreen ? zoomMobileScelto : zoomDesktopScelto;
@@ -15,30 +15,31 @@ var zoomFinale = isSmallScreen ? zoomMobileScelto : zoomDesktopScelto;
 var doHover = false;     
 var doHighlight = false;  
 
-// Creiamo una vista temporanea per calcolare l'estensione visibile iniziale sulla base della risoluzione dello schermo
 var vistaIniziale = new ol.View({
     center: centroMappa,
     zoom: zoomFinale,
-    minZoom: zoomFinale, 
+    minZoom: zoomFinale, // Blocca il dezoom massimo al valore iniziale scelto
     maxZoom: 28, 
     enableRotation: false
 });
 
-// Calcolo dinamico dell'extent basato sulle dimensioni attuali della finestra del browser
-var dimensioneFinestra = [window.innerWidth, window.innerHeight];
-var extentIniziale = vistaIniziale.calculateExtent(dimensioneFinestra);
-
-// Aggiorniamo le opzioni della vista applicando l'extent calcolato come limite invalicabile
-vistaIniziale.set('extent', extentIniziale);
-
 // =========================================================================
-// 2. INIZIALIZZAZIONE MAPPA
+// 2. INIZIALIZZAZIONE MAPPA E APPLICAZIONE LIMITI (EXTENT)
 // =========================================================================
 var map = new ol.Map({
     target: 'map',
     renderer: 'canvas',
     layers: layersList,
-    view: vistaIniziale // Utilizza la vista con i confini dinamici integrati
+    view: vistaIniziale
+});
+
+// Calcoliamo e impostiamo i confini invalicabili basandoci sulla visualizzazione iniziale reale
+map.once('rendercomplete', function() {
+    var size = map.getSize();
+    if (size) {
+        var extentIniziale = vistaIniziale.calculateExtent(size);
+        vistaIniziale.set('extent', extentIniziale);
+    }
 });
 
 // =========================================================================
