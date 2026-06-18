@@ -84,9 +84,9 @@ cluster_sitiguidavol2_5 = new ol.source.Cluster({
     
     // 2. Raggruppiamo i punti in cluster separati rigorosamente per Regione
     createCluster: function(features) {
-        // CONTROLLO DI SICUREZZA: se non ci sono feature o l'array è vuoto, evita il crash
+        // Se non ci sono feature, restituiamo un cluster vuoto ma valido per OpenLayers
         if (!features || features.length === 0 || !features[0]) {
-            return null;
+            return new ol.Feature(); 
         }
         
         // Prendiamo la regione di riferimento dal primo punto del gruppo
@@ -94,14 +94,15 @@ cluster_sitiguidavol2_5 = new ol.source.Cluster({
         
         // Teniamo solo i punti che appartengono alla STESSA regione
         var featuresFiltrate = features.filter(function(f) {
-            return f && f.get('Regione') === regioneTarget;
+            return f && f.get('Regione') === regionTarget;
         });
         
+        // Se il filtro svuota tutto, restituiamo una feature vuota per evitare il crash di 'ol_uid'
         if (featuresFiltrate.length === 0) {
-            return null;
+            return new ol.Feature();
         }
         
-        // Calcoliamo il centro geometrico (coordinate medie) basandoci solo sui punti della stessa regione
+        // Calcoliamo il centro geometrico (coordinate medie)
         var x = 0, y = 0;
         featuresFiltrate.forEach(function(f) {
             var coord = f.getGeometry().getCoordinates();
@@ -110,7 +111,7 @@ cluster_sitiguidavol2_5 = new ol.source.Cluster({
         });
         var centroCluster = [x / featuresFiltrate.length, y / featuresFiltrate.length];
         
-        // Generiamo il cluster finale contenente solo i punti della stessa regione
+        // Generiamo il cluster finale
         return new ol.Feature({
             geometry: new ol.geom.Point(centroCluster),
             features: featuresFiltrate
