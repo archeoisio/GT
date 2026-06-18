@@ -11,11 +11,9 @@ var zoomMobileScelto  = 4.8;  // Valore ottimale per Smartphone/Tablet
 var isSmallScreen = window.innerWidth < 650;
 var zoomFinale = isSmallScreen ? zoomMobileScelto : zoomDesktopScelto;
 
-// =========================================================================
-// ATTIVAZIONE POPUP E EVIDENZIATORE (RIPRISTINATI)
-// =========================================================================
-var doHover = false;     // Metti true se vuoi il popup al passaggio del mouse
-var doHighlight = true;  // Metti true se vuoi che l'elemento si illumini
+// Configurazione nativa: NO hover, SI click con evidenziatore attivo
+var doHover = false;     
+var doHighlight = true;  
 
 // =========================================================================
 // 2. INIZIALIZZAZIONE MAPPA
@@ -57,7 +55,6 @@ function styleCursorMove() {
 }
 styleCursorMove();
 
-// Definizione schermi e touch
 var hasTouchScreen = map.getViewport().classList.contains('ol-touch');
 
 // =========================================================================
@@ -183,7 +180,7 @@ function createPopupField(currentFeature, currentFeatureKeys, layer) {
 }
 
 // =========================================================================
-// 6. HIGHLIGHT E FUNZIONI DI HOVER (POINTERMOVE)
+// 6. HIGHLIGHT (POINTERMOVE SENZA POPUP AUTOMATICO)
 // =========================================================================
 var collection = new ol.Collection();
 var featureOverlay = new ol.layer.Vector({
@@ -200,12 +197,10 @@ var featureOverlay = new ol.layer.Vector({
 var highlight;
 
 function onPointerMove(evt) {
-    if (!doHover && !doHighlight) return;
+    if (!doHighlight) return; // Gestisce solo l'evidenziazione grafica al passaggio
     
     var pixel = map.getEventPixel(evt.originalEvent);
-    var coord = evt.coordinate;
-    var currentFeature, currentLayer, currentFeatureKeys, clusteredFeatures, clusterLength;
-    var popupText = '<ul>';
+    var currentFeature, currentLayer, clusteredFeatures, clusterLength;
 
     var featuresAndLayers = [];
     map.forEachFeatureAtPixel(pixel, function(feature, layer) {
@@ -214,39 +209,13 @@ function onPointerMove(evt) {
         }
     });
 
-    for (var i = featuresAndLayers.length - 1; i >= 0; i--) {
-        var feature = featuresAndLayers[i].feature;
-        var layer = featuresAndLayers[i].layer;
-        var doPopup = false;
-        for (k in layer.get('fieldImages')) {
-            if (layer.get('fieldImages')[k] != "Hidden") doPopup = true;
-        }
-        currentFeature = feature;
-        currentLayer = layer;
-        clusteredFeatures = feature.get("features");
+    if (featuresAndLayers.length > 0) {
+        var lastIndex = featuresAndLayers.length - 1;
+        currentFeature = featuresAndLayers[lastIndex].feature;
+        currentLayer = featuresAndLayers[lastIndex].layer;
+        clusteredFeatures = currentFeature.get("features");
         if (clusteredFeatures) clusterLength = clusteredFeatures.length;
-
-        if (typeof clusteredFeatures !== "undefined") {
-            if (doPopup) {
-                for(var n=0; n<clusteredFeatures.length; n++) {
-                    currentFeature = clusteredFeatures[n];
-                    currentFeatureKeys = currentFeature.getKeys();
-                    popupText += '<li><table><a><b>' + layer.get('popuplayertitle') + '</b></a>';
-                    popupText += createPopupField(currentFeature, currentFeatureKeys, layer);
-                    popupText += '</table></li>';    
-                }
-            }
-        } else {
-            currentFeatureKeys = currentFeature.getKeys();
-            if (doPopup) {
-                popupText += '<li><table><a><b>' + layer.get('popuplayertitle') + '</b></a>';
-                popupText += createPopupField(currentFeature, currentFeatureKeys, layer);
-                popupText += '</table></li>';
-            }
-        }
     }
-
-    popupText = (popupText == '<ul>') ? '' : popupText + '</ul>';
     
     if (doHighlight) {
         if (currentFeature !== highlight) {
@@ -286,22 +255,11 @@ function onPointerMove(evt) {
             highlight = currentFeature;
         }
     }
-
-    if (doHover) {
-        if (popupText) {
-            content.innerHTML = popupText;
-            container.style.display = 'block';
-            overlayPopup.setPosition(coord);
-        } else {
-            container.style.display = 'none';
-            closer.blur();
-        }
-    }
 }
 map.on('pointermove', onPointerMove);
 
 // =========================================================================
-// 7. GESTIONE EVENTI CLICK (FEATURES INTERATTIVE E WMS)
+// 7. GESTIONE EVENTI CLICK (APERTURA POPUP UNICA)
 // =========================================================================
 var popupContent = '';
 var popupCoord = null;
@@ -320,8 +278,8 @@ function updatePopup() {
 } 
 
 function onSingleClickFeatures(evt) {
-    if (doHover || sketch) return;
-    if (!featuresPopupActive) featuresPopupActive = true;
+    if (sketch) return;
+    featuresPopupActive = true;
 
     var pixel = map.getEventPixel(evt.originalEvent);
     var coord = evt.coordinate;
@@ -371,7 +329,7 @@ function onSingleClickFeatures(evt) {
 }
 
 function onSingleClickWMS(evt) {
-    if (doHover || sketch) return;
+    if (sketch) return;
     if (!featuresPopupActive) popupContent = '';
 
     var coord = evt.coordinate;
@@ -515,27 +473,6 @@ map.once('rendercomplete', function() {
         var attribHtml = `<a href="https://github.com/qgis2web/qgis2web">qgis2web</a> &middot; <a href="https://openlayers.org/">OpenLayers</a> &middot; <a href="https://qgis.org/">QGIS</a>`;
         if (layerAttrs.length > 0) attribHtml += ' &nbsp;|&nbsp; ' + layerAttrs.join(', ');
         bottomAttributionUl.innerHTML = '<li>' + attribHtml + '</li>';
-    }
-});
-
-// Disabilita hover temporaneo sui controlli UI nativi
-var preDoHover = doHover;
-var preDoHighlight = doHighlight;
-var isPopupAllActive = false;
-document.addEventListener('DOMContentLoaded', function() {
-    if (doHover || doHighlight) {
-        var controlElements = document.getElementsByClassName('ol-control');
-        for (var i = 0; i < controlElements.length; i++) {
-            controlElements[i].addEventListener('mouseover', function() { 
-                doHover = false;
-                doHighlight = false;
-            });
-            controlElements[i].addEventListener('mouseout', function() {
-                doHover = preDoHover;
-                if (isPopupAllActive) return;
-                doHighlight = preDoHighlight;
-            });
-        }
     }
 });
 
