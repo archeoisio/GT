@@ -7,6 +7,8 @@ var lyr_XYZLayer_0 = new ol.layer.Tile({
         attributions: ' ',
         url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
     })
+}); // <-- AGGIUNTO QUESTO (Chiusura corretta di lyr_XYZLayer_0)
+
 var lyr_Satellite_0 = new ol.layer.Tile({
     'title': 'Satellite (Google)',
     'opacity': 1.000000,
@@ -14,8 +16,7 @@ var lyr_Satellite_0 = new ol.layer.Tile({
         attributions: ' ',
         url: 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}' // Satellite con etichette stradali
     })
-});
-var format_regioni_1 = new ol.format.GeoJSON();
+});var format_regioni_1 = new ol.format.GeoJSON();
 var features_regioni_1 = format_regioni_1.readFeatures(json_regioni_1, 
     {dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857'});
 var jsonSource_regioni_1 = new ol.source.Vector({
