@@ -1,15 +1,17 @@
 // =========================================================================
-// 1. CONFIGURAZIONE DELLA VISTA E ZOOM SELEZIONABILI (SBLOCCATO COMPLETAMENTE)
+// 1. CONFIGURAZIONE DELLA VISTA E ZOOM SELEZIONABILI (INQUADRATURA TOTALE)
 // =========================================================================
-var centroMappa = ol.proj.fromLonLat([12.5674, 41.8719]); 
+// 💡 MODIFICATO: Spostiamo il centro visivo più a Nord-Ovest (zona Toscana/Emilia) 
+// e più in alto per bilanciare la forma allungata dell'Italia nello schermo.
+var centroMappa = ol.proj.fromLonLat([11.5000, 43.5000]); 
 
-// Confini leggermente più ampi per evitare che OpenLayers rifiuti i tuoi livelli di zoom
-var confiniGradi = [5.0, 34.0, 20.0, 48.0];
+// Confini d'allerta allargati per dare respiro al posizionamento automatico
+var confiniGradi = [4.0, 34.0, 21.0, 48.5];
 var confiniBloccatiItalia = ol.extent.applyTransform(confiniGradi, ol.proj.getTransform('EPSG:4326', 'EPSG:3857'));
 
-// 💡 REGOLA QUI LO ZOOM: Metti 5.2 per vedere tutta l'Italia su PC.
-var zoomDesktopScelto = 5.2;  // Modifica questo valore per avvicinare (es. 6) o allontanare (es. 4.8)
-var zoomMobileScelto  = 4.3;  // Ottimale per smartphone
+// 💡 REGOLA QUI LO ZOOM FINALE PER IL "TUTTO INCLUSO"
+var zoomDesktopScelto = 5.6;  // Valore ideale per vedere l'Italia intera su monitor PC
+var zoomMobileScelto  = 4.6;  // Valore ideale per vedere l'Italia intera in verticale su Smartphone
 
 var isSmallScreen = window.innerWidth < 650;
 var zoomFinale = isSmallScreen ? zoomMobileScelto : zoomDesktopScelto;
@@ -20,7 +22,7 @@ var doHighlight = false;
 var vistaIniziale = new ol.View({
     center: centroMappa,
     zoom: zoomFinale,
-    minZoom: 1,
+    minZoom: 4.0, // Impedisce all'utente di perdersi nello spazio facendo troppo zoom indietro
     maxZoom: 28, 
     extent: confiniBloccatiItalia, 
     enableRotation: false
@@ -36,16 +38,14 @@ var map = new ol.Map({
     view: vistaIniziale
 });
 
-// 💡 FORZATURA AD AVVIO AVVENUTO: Risolve i conflitti causati dai pesi dei Layer GeoJSON
+// Forzatura atomica all'avvio: scavalca i calcoli automatici dei layer di QGIS
 map.once('postrender', function() {
     var view = map.getView();
     view.setCenter(centroMappa);
     view.setZoom(zoomFinale);
-    // Blocca lo zoom indietro solo dopo che lo zoom iniziale è stato applicato con successo
-    view.setMinZoom(zoomFinale); 
 });
 
-// Funzione di controllo del centro (Evita che l'utente trascini la mappa fuori dall'Italia)
+// Controllo dei confini durante il trascinamento (Rimette in assetto se l'utente scappa)
 map.getView().on('change:center', function() {
     var view = map.getView();
     var center = view.getCenter();
@@ -53,7 +53,6 @@ map.getView().on('change:center', function() {
         view.setCenter(centroMappa); 
     }
 });
-
 // =========================================================================
 // 3. GESTIONE CURSORE
 // =========================================================================
