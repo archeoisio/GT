@@ -2,7 +2,7 @@
 // 1. CONFIGURAZIONE DELLA VISTA E ZOOM (PULITA - SENZA ALCUN FIT)
 // =========================================================================
 // Il centro geometrico dove si posizionerà la mappa all'avvio
-var centroMappa = ol.proj.fromLonLat([12.5000, 42.5000]); 
+var centroMappa = ol.proj.fromLonLat([12.5000, 42.0000]); 
 
 // Rettangolo di movimento (Europa/Mediterraneo) per dare spazio allo zoom
 var confiniGradiAmpio = [-35.0, 20.0, 45.0, 70.0];
