@@ -19,13 +19,17 @@ map.getView().fit(
     { size: map.getSize(), padding: [60, 60, 60, 60] }
 );
 
-// 1. Recuperiamo lo zoom decimale esatto (es. 4.35)
+// 1. Recuperiamo lo zoom decimale esatto calcolato sui confini
 var zoomInizialeCalcolato = map.getView().getZoom();
 
-// 2. Blocchiamo il minZoom a questo valore esatto, così l'utente non può allontanarsi oltre
-map.getView().setMinZoom(zoomInizialeCalcolato);
+// 2. DEZOOMIAMO: Sottraiamo 1.2 livelli per allontanare la visuale all'apertura
+var zoomAllontanato = zoomInizialeCalcolato - 1.2; 
 
-// change cursor
+// 3. Applichiamo la nuova vista dezoomata alla mappa
+map.getView().setZoom(zoomAllontanato);
+
+// 4. Blocchiamo il minZoom a questo valore più lontano
+map.getView().setMinZoom(zoomAllontanato);// change cursor
 function pointerOnFeature(evt) {
     if (evt.dragging) {
         return;
