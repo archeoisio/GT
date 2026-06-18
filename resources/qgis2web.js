@@ -1,31 +1,35 @@
 // =========================================================================
-// 1. CONFIGURAZIONE DELLA VISTA E ZOOM SELEZIONABILI (CORRETTA)
+// 1. CONFIGURAZIONE DELLA VISTA E ZOOM SELEZIONABILI (CONFINI IN GRADI)
 // =========================================================================
-// Coordinate del centro mappa (Centro Italia in EPSG:3857)
-var centroMappa = [1400000.000000, 5200000.000000]; 
+// Centro Italia convertito e calcolato per coordinate geografiche stabili
+var centroMappa = ol.proj.fromLonLat([12.5674, 41.8719]); 
 
-// Scegli qui lo zoom iniziale libero per i due dispositivi:
-var zoomDesktopScelto = 5.8;  // Valore ottimale per PC
-var zoomMobileScelto  = 5.0;  // Valore ottimale per Smartphone/Tablet
+// I CONFINI DELL'ITALIA IN GRADI (WGS 84) convertiti al volo nel sistema della mappa
+// [Longitudine Ovest, Latitudine Sud, Longitudine Est, Latitudine Nord]
+var confiniGradi = [6.6266, 35.4929, 18.5204, 47.0921];
+var confiniBloccatiItalia = ol.extent.applyTransform(confiniGradi, ol.proj.getTransform('EPSG:4326', 'EPSG:3857'));
+
+// Scegli qui lo zoom iniziale per i due dispositivi:
+var zoomDesktopScelto = 5.8;  // Ottimale per PC
+var zoomMobileScelto  = 5.0;  // Ottimale per Smartphone
 
 var isSmallScreen = window.innerWidth < 650;
 var zoomFinale = isSmallScreen ? zoomMobileScelto : zoomDesktopScelto;
 
-// Configurazione nativa: NO hover, SI click con evidenziatore attivo
 var doHover = false;     
 var doHighlight = false;  
 
-// Creiamo la vista con una leggera tolleranza sul minZoom per permettere il calcolo dell'extent
 var vistaIniziale = new ol.View({
     center: centroMappa,
     zoom: zoomFinale,
-    minZoom: zoomFinale - 0.5, // Tolleranza iniziale antirottura
+    minZoom: 4.8,                  // Impedisce di fare troppo zoom indietro ed uscire dall'Italia
     maxZoom: 28, 
+    extent: confiniBloccatiItalia, // Taglia i bordi della mappa sul rettangolo italiano
     enableRotation: false
 });
 
 // =========================================================================
-// 2. INIZIALIZZAZIONE MAPPA E APPLICAZIONE LIMITI DINAMICI
+// 2. INIZIALIZZAZIONE MAPPA
 // =========================================================================
 var map = new ol.Map({
     target: 'map',
@@ -34,21 +38,13 @@ var map = new ol.Map({
     view: vistaIniziale
 });
 
-// Applichiamo i limiti basati sullo schermo corrente appena la mappa viene renderizzata
-map.once('postrender', function() {
-    var view = map.getView();
-    var size = map.getSize();
-    if (size) {
-        // Calcola l'area visibile esatta all'avvio
-        var extentIniziale = view.calculateExtent(size);
-        // Applica l'extent e ripristina il blocco rigido dello zoom indietro
-        view.setProperties({
-            'extent': extentIniziale,
-            'minZoom': zoomFinale
-        });
+// Forza la mappa a rimanere ancorata all'estensione se l'utente tenta di trascinarla fuori
+map.getView().on('change:center', function() {
+    var center = map.getView().getCenter();
+    if (!ol.extent.containsCoordinate(confiniBloccatiItalia, center)) {
+        map.getView().setCenter(centroMappa); // Se l'utente scappa oltre i confini, la mappa lo rimette al centro
     }
 });
-
 // =========================================================================
 // 3. GESTIONE CURSORE
 // =========================================================================
