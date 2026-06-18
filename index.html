@@ -355,16 +355,19 @@
                 tecnicopratica: { tutte: [], disattivate: [], campoNome: 'Sito/Museo', sorgenteOL: null }
             };
 
-            // LOGICA DI RESET DELLA VISTA SULLA MAPPA (HOME)
-            document.getElementById('btn-reset-view').addEventListener('click', function(e) {
-                if (typeof map !== 'undefined') {
-                    map.getView().fit(
-                        [-3.70, 35.80, 27.00, 47.25], 
-                        { size: map.getSize(), padding: [50, 80, 50, 80], duration: 800 }
-                    );
-                }
-            });
-
+         // LOGICA DI RESET DELLA VISTA SULLA MAPPA (HOME) - SENZA FIT
+document.getElementById('btn-reset-view').addEventListener('click', function(e) {
+    if (typeof map !== 'undefined') {
+        var view = map.getView();
+        
+        // Sfrutta il centro e lo zoom definitivi impostati nella Sezione 1
+        view.animate({
+            center: centroMappa,
+            zoom: zoomFinale,
+            duration: 800 // Animazione fluida di quasi un secondo
+        });
+    }
+});
             // Gestione apertura/chiusura del pannello principale
             document.getElementById('btn-toggle-pnl').addEventListener('click', function() {
                 var pnl = document.getElementById('pnl-filtri');
