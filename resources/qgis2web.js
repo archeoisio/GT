@@ -8,25 +8,22 @@ var map = new ol.Map({
     view: new ol.View({
          maxZoom: 28, 
          minZoom: 1, 
-         enableRotation: false, // Mantiene il nord fisso (no rotazione da mobile)
-         extent: confiniMappa   // Blocca il trascinamento (pan) fuori da questi confini
+         enableRotation: false, 
+         extent: confiniMappa   
     })
 });
 
-// Vista iniziale allontanata - Modificato padding per vedere tutta l'Italia con più margine
+// Vista iniziale allontanata - Sfrutta il padding per dare respiro all'inquadratura
 map.getView().fit(
     confiniMappa, 
     { size: map.getSize(), padding: [40, 10, 20, 10] }
 );
 
-// 1. Recuperiamo lo zoom esatto che OpenLayers ha appena calcolato per far entrare l'Italia
+// 1. Recuperiamo lo zoom decimale esatto (es. 4.35)
 var zoomInizialeCalcolato = map.getView().getZoom();
 
-// 2. Blocchiamo il minZoom a questo valore specifico, impedendo di andare oltre
+// 2. Blocchiamo il minZoom a questo valore esatto, così l'utente non può allontanarsi oltre
 map.getView().setMinZoom(zoomInizialeCalcolato);
-
-// 3. Forziamo lo zoom solo su livelli interi (full zooms only)
-map.getView().setProperties({constrainResolution: true});
 
 // change cursor
 function pointerOnFeature(evt) {
