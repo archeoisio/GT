@@ -337,7 +337,7 @@
             var datiLivelli = {
                 siti: { tutte: [], disattivate: [], campoNome: 'Sito/Museo', sorgenteOL: null },
                 musei: { tutte: [], disattivate: [], campoNome: 'Museo', sorgenteOL: null },
-                tecnicopratica: { tutte: [], disattivate: [], campoNome: 'Sito/Museo', sorgenteOL: null } // Aggiunto record interno
+                tecnicopratica: { tutte: [], disattivate: [], campoNome: 'Sito/Museo', sorgenteOL: null }
             };
 
             // LOGICA DI RESET DELLA VISTA SULLA MAPPA (HOME)
@@ -380,7 +380,7 @@
             }
             impostaToggleMacroSezione('titolo-siti', 'cont-siti');
             impostaToggleMacroSezione('titolo-musei', 'cont-musei');
-            impostaToggleMacroSezione('titolo-tecnicopratica', 'cont-tecnicopratica'); // Attivato toggle
+            impostaToggleMacroSezione('titolo-tecnicopratica', 'cont-tecnicopratica');
 
             function scaricaDatiOnlineEInizializza() {
                 fetch(URL_GOOGLE_SCRIPT)
@@ -405,7 +405,7 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ 
                         elemento: nomeElemento, 
-                        media: codiceLingua, 
+                        lingua: codiceLingua, // CORRETTO: Ripristinato 'lingua' coerente col foglio Google
                         stato: valoreStato,
                         regione: regioneElemento
                     })
@@ -431,24 +431,24 @@
                     });
                     datiLivelli.musei.sorgenteOL = jsonSource_museiguidavol2_4;
                 }
-                // Inizializzazione dinamica del nuovo layer Tecnico Pratica
-                if (typeof format_sititecnicopratica_5 !== 'undefined' && typeof json_tecnicopratica_5 !== 'undefined') {
-                    datiLivelli.tecnicopratica.tutte = format_sititecnicopratica_5.readFeatures(json_tecnicopratica_5, {
+                
+                // CORRETTO: Adattato ai nomi esatti generati nel tuo layers.js per 'sititecnicopratica'
+                if (typeof format_sititecnicopratica !== 'undefined' && typeof json_tecnicopratica_5 !== 'undefined') {
+                    datiLivelli.tecnicopratica.tutte = format_sititecnicopratica.readFeatures(json_tecnicopratica_5, {
                         dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857'
                     });
-                    datiLivelli.tecnicopratica.sorgenteOL = jsonSource_sititecnicopratica_5;
-                } else if (typeof jsonSource_sititecnicopratica_5 !== 'undefined' && typeof json_tecnicopratica_5 !== 'undefined') {
-                    // Fallback se QGIS2Web usa lo stesso format per i vettori puntuali
+                    datiLivelli.tecnicopratica.sorgenteOL = jsonSource_sititecnicopratica;
+                } else if (typeof jsonSource_sititecnicopratica !== 'undefined' && typeof json_tecnicopratica_5 !== 'undefined') {
                     var formatoPunti = typeof format_sitiguidavol2_5 !== 'undefined' ? format_sitiguidavol2_5 : new ol.format.GeoJSON();
                     datiLivelli.tecnicopratica.tutte = formatoPunti.readFeatures(json_tecnicopratica_5, {
                         dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857'
                     });
-                    datiLivelli.tecnicopratica.sorgenteOL = jsonSource_sititecnicopratica_5;
+                    datiLivelli.tecnicopratica.sorgenteOL = jsonSource_sititecnicopratica;
                 }
 
                 costruisciAlbero('siti', 'albero-siti');
                 costruisciAlbero('musei', 'albero-musei');
-                costruisciAlbero('tecnicopratica', 'albero-tecnicopratica'); // Costruzione albero
+                costruisciAlbero('tecnicopratica', 'albero-tecnicopratica');
                 aggiornaConteggiEFiltraggio();
             }
 
@@ -463,7 +463,7 @@
                 var struttura = {};
                 datiLivelli[tipo].tutte.forEach(function(f) {
                     var reg = f.get('Regione') || 'Non Specificata';
-                    var prov = f.get('Provincia') || 'Non Specificata';
+                    var prov = f.get('Provincia') || f.get('Provincia ') || 'Non Specificata';
                     var nome = f.get(datiLivelli[tipo].campoNome);
                     if (!nome) return;
 
