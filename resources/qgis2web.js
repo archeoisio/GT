@@ -10,7 +10,7 @@ var confiniGradi = [6.6266, 35.4929, 18.5204, 47.0921];
 var confiniBloccatiItalia = ol.extent.applyTransform(confiniGradi, ol.proj.getTransform('EPSG:4326', 'EPSG:3857'));
 
 // Scegli qui lo zoom iniziale per i due dispositivi:
-var zoomDesktopScelto = 2;  // Ottimale per PC
+var zoomDesktopScelto = 1;  // Ottimale per PC
 var zoomMobileScelto  = 5.0;  // Ottimale per Smartphone
 
 var isSmallScreen = window.innerWidth < 650;
