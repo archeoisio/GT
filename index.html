@@ -60,6 +60,33 @@
             padding: 0;
             margin: 0;
         }
+        
+        /* === STRUTTURA CONTROLLO HOME FLUTTUANTE ACCANTO ALLA LEGENDA === */
+        .mappa-controllo-home {
+            position: absolute;
+            top: 10px; /* Allineato all'altezza della legenda di fabbrica */
+            right: 48px; /* Spinto a sinistra per fare spazio all'icona della legenda */
+            z-index: 100000; /* Superiore alla mappa e coordinato con la legenda */
+        }
+        .btn-mappa-home {
+            background-color: #f8f8f8;
+            color: #444444;
+            border: 1px solid rgba(0,0,0,0.4);
+            border-radius: 2px; /* Uniformato allo stile di fabbrica dei pulsanti OpenLayers */
+            cursor: pointer;
+            width: 26px;
+            height: 26px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+            padding: 0;
+        }
+        .btn-mappa-home:hover {
+            background-color: rgba(248, 248, 248, 0.7);
+        }
+
         /* Stili per il pannello di controllo filtri */
         .pannello-features {
             position: absolute; 
@@ -234,6 +261,10 @@
     </head>
     <body>
         <div id="map">
+            <div class="mappa-controllo-home">
+                <button id="btn-reset-view" class="btn-mappa-home" title="Ripristina Vista iniziale">🏠</button>
+            </div>
+
             <div id="popup" class="ol-popup">
                 <a href="#" id="popup-closer" class="ol-popup-closer"></a>
                 <div id="popup-content"></div>
@@ -282,6 +313,16 @@
                 siti: { tutte: [], disattivate: [], campoNome: 'Sito/Museo', sorgenteOL: null },
                 musei: { tutte: [], disattivate: [], campoNome: 'Museo', sorgenteOL: null }
             };
+
+            // LOGICA DI RESET DELLA VISTA SULLA MAPPA (HOME)
+            document.getElementById('btn-reset-view').addEventListener('click', function(e) {
+                if (typeof map !== 'undefined') {
+                    map.getView().fit(
+                        [650000.000000, 4240000.000000, 2200000.000000, 5950000.000000], 
+                        { size: map.getSize(), padding: [50, 80, 50, 80], duration: 800 }
+                    );
+                }
+            });
 
             // Gestione apertura/chiusura del pannello principale
             document.getElementById('btn-toggle-pnl').addEventListener('click', function() {
@@ -350,7 +391,7 @@
 
                     if (!struttura[reg]) struttura[reg] = {};
                     if (!struttura[reg][prov]) struttura[reg][prov] = [];
-                    struttura[reg][prov].push(f);
+                    structure[reg][prov].push(f);
                 });
 
                 Object.keys(struttura).sort().forEach(function(regione) {
