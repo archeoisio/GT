@@ -87,22 +87,22 @@
             background-color: rgba(248, 248, 248, 0.7);
         }
 
-        pannello-features {
+        .pannello-features {
     position: absolute; 
-    top: 200px;
+    top: 120px; /* Ridotto leggermente da 200px per dare più spazio verticale al pannello */
     right: 10px; 
     z-index: 99998; 
     background: white; 
     padding: 12px; 
     border-radius: 6px; 
     
-    /* MODIFICATO: Usa 100dvh invece di 100vh per calcolare al millimetro l'altezza reale su mobile */
-    max-height: calc(100dvh - 240px); 
+    /* Altezza massima calcolata in modo sicuro sulla quota dinamica */
+    max-height: calc(100dvh - 150px); 
     
     overflow-y: auto; 
     box-shadow: 0 4px 15px rgba(0,0,0,0.25); 
     
-    /* MODIFICATO: Mantiene i 280px su desktop ma impedisce al pannello di uscire dagli schermi mobile stretti */
+    /* Larghezza fissa su desktop, flessibile su mobile */
     width: 280px; 
     max-width: 90vw; 
     
@@ -110,7 +110,7 @@
     font-size: 13px;
     color: #333;
     transition: max-height 0.3s ease, width 0.3s ease, padding 0.3s ease;
-}
+} /* <--- VERIFICA CHE QUESTA PARENTESI SIA PRESENTE! */
         .pannello-header {
             display: flex;
             justify-content: space-between;
