@@ -209,6 +209,24 @@ var json_museiguidavol2_4 = {
     {
       "type": "Feature",
       "properties": {
+        "id_Reg": "7",
+        "Regione": "Lazio",
+        "ID museoxr": "10",
+        "Museo": "Palazzo Barberini e Palazzo Corsini",
+        "Comune": "Roma",
+        "Provincia": "Roma",
+        "Sezione": "Gallerie Nazionali d'Arte Antica",
+        "Lat": 41.9032,
+        "Long": 12.4902
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.4902, 41.9032]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "id_Reg": "8",
         "Regione": "Liguria",
         "ID museoxr": "2",
