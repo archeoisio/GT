@@ -10,7 +10,7 @@ var confiniBloccatiMappa = ol.extent.applyTransform(confiniGradiAmpio, ol.proj.g
 
 // 🌍 MODIFICA QUESTI DUE VALORI PER REGOLARE LO ZOOM COME VUOI
 var zoomDesktopScelto = 5.9;  // Abbassa a 4.0 o 3.0 se vuoi vedere più territorio intorno
-var zoomMobileScelto  = 3.8;  
+var zoomMobileScelto  = 3;  
 
 var isSmallScreen = window.innerWidth < 650;
 var zoomFinale = isSmallScreen ? zoomMobileScelto : zoomDesktopScelto;
