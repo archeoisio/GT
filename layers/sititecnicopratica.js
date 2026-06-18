@@ -13,8 +13,8 @@ var json_tecnicopratica_5 = {
       "properties": {
         "ID_Reg": "1",
         "Regione": "Abruzzo",
-        "ID_sitoxre": "1",
-        "ID_sitotot": "1",
+        "ID_sitoxre": "55",
+        "ID_sitotot": "555",
         "Sito/Museo": "Alba Fucens TP",
         "Comune/Loc": "Massa d'Albe",
         "Provincia": "L'Aquila",
