@@ -38,11 +38,11 @@
             max-width: calc(100% - 320px) !important;
         }
 
-        .layer-switcher, 
-        .layer-switcher.shown, 
-        .ol-control.layer-switcher, 
-        .ol-control.layer-switcher.shown {
-            z-index: 99999 !important;
+        /* Forza in primo piano l'icona del controllo layer e il pannello espandibile della legenda */
+        .ol-layerswitcher,
+        .ol-layerswitcher.ol-collapse,
+        .ol-layerswitcher .layerswitcher-panel {
+            z-index: 999999 !important;
         }
         </style>
 
@@ -83,7 +83,7 @@
             position: absolute; 
             top: 200px;
             right: 10px; 
-            z-index: 500;
+            z-index: 99998; /* Posizionato un livello sotto la legenda per evitare conflitti visivi */
             background: white; 
             padding: 12px; 
             border-radius: 6px; 
@@ -167,7 +167,7 @@
         }
         .nodo-punto {
             font-weight: normal;
-            margin-left: 15px; /* Ridotto il margine sinistro globale per far spazio alle icone a destra */
+            margin-left: 15px;
             padding: 4px 0;
             display: flex;
             align-items: center;
@@ -208,7 +208,7 @@
         .lbl-contenitore-punto {
             display: flex;
             align-items: center;
-            max-width: 55%; /* Ridotto per evitare sovrapposizioni con le azioni a destra */
+            max-width: 55%;
             word-wrap: break-word;
         }
         .chk-filtro {
@@ -227,7 +227,6 @@
             margin-left: 4px;
         }
         
-        /* === STRUTTURA LINGUE E CONTROLLI ALLINEATI === */
         .contenitore-azioni-punto {
             display: flex;
             align-items: center;
@@ -314,7 +313,8 @@
 
         <script>
         (function() {
-            var URL_GOOGLE_SCRIPT = ""https://script.google.com/macros/s/AKfycbymYCxxhCEs68VZiol7iVHzEOpfNUMUGU9hHoWNyjn_BDLExzXnx18oyeTn4aMVJG2F_w/exec";
+            // CORRETTO: rimosse le doppie virgolette iniziali che bloccavano tutto lo script
+            var URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbymYCxxhCEs68VZiol7iVHzEOpfNUMUGU9hHoWNyjn_BDLExzXnx18oyeTn4aMVJG2F_w/exec";
             var datiLingueOnline = {};
 
             var datiLivelli = {
@@ -377,12 +377,23 @@
             }
 
             function inviaAggiornamentoOnline(nomeElemento, codiceLingua, valoreStato) {
+                // Sincronizza subito anche lo stato locale per reattività immediata
+                if (!datiLingueOnline[nomeElemento]) datiLingueOnline[nomeElemento] = {};
+                datiLingueOnline[nomeElemento][codiceLingua] = valoreStato;
+
                 fetch(URL_GOOGLE_SCRIPT, {
                     method: "POST",
                     mode: "no-cors",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ elemento: nomeElemento, lingua: codiceLingua, stato: valoreStato })
                 });
+            }
+
+            // AGGIUNTO: Estrattore booleano sicuro indispensabile per interpretare correttamente i dati da Excel
+            function estraiStatoBooleano(obj, chiave) {
+                if (!obj || obj[chiave] === undefined) return false;
+                var val = obj[chiave];
+                return val === true || val === 1 || String(val).toLowerCase() === 'true' || String(val) === '1';
             }
 
             function inizializzaFiltriAvanzati() {
@@ -555,9 +566,10 @@
                             });
                             divAzioni.appendChild(btnZoom);
 
-                            // Recupero stati online pregressi
-                            var statoItaSalvato = (datiLingueOnline[nomePunto] && datiLingueOnline[nomePunto].ita) ? true : false;
-                            var statoIngSalvato = (datiLingueOnline[nomePunto] && datiLingueOnline[nomePunto].ing) ? true : false;
+                            // CORRETTO: Recupero stati online pregressi usando la funzione sicura estraiStatoBooleano
+                            var recordPuntoOnline = datiLingueOnline[nomePunto];
+                            var statoItaSalvato = estraiStatoBooleano(recordPuntoOnline, 'ita');
+                            var statoIngSalvato = estraiStatoBooleano(recordPuntoOnline, 'ing');
 
                             // Checkbox ITA
                             var lblIta = document.createElement('label');
@@ -603,46 +615,11 @@
                                 aggiornaConteggiEFiltraggio();
                             });
                         });
-
-                        chkProv.addEventListener('change', function() {
-                            var checked = this.checked;
-                            var subChks = divPuntiContenitore.querySelectorAll('.chk-singolo-punto');
-                            subChks.forEach(function(c) {
-                                if (c.checked !== checked) {
-                                    c.checked = checked;
-                                    var n = c.dataset.nome;
-                                    var dis = datiLivelli[tipo].disattivate;
-                                    if (!checked) {
-                                        if (dis.indexOf(n) === -1) dis.push(n);
-                                    } else {
-                                        var idx = dis.indexOf(n);
-                                        if (idx > -1) dis.splice(idx, 1);
-                                    }
-                                }
-                            });
-                            aggiornaStatoCheckboxPadri(chkReg, divProvContenitore);
-                            aggiornaConteggiEFiltraggio();
-                        });
+                        aggiornaStatoCheckboxPadri(chkProv, divPuntiContenitore);
                     });
-
-                    chkReg.addEventListener('change', function() {
-                        var checked = this.checked;
-                        var allChks = divProvContenitore.querySelectorAll('.chk-filtro');
-                        allChks.forEach(function(c) {
-                            c.checked = checked;
-                            if (c.classList.contains('chk-singolo-punto')) {
-                                var n = c.dataset.nome;
-                                var dis = datiLivelli[tipo].disattivate;
-                                if (!checked) {
-                                    if (dis.indexOf(n) === -1) dis.push(n);
-                                } else {
-                                    var idx = dis.indexOf(n);
-                                    if (idx > -1) dis.splice(idx, 1);
-                                }
-                            }
-                        });
-                        aggiornaConteggiEFiltraggio();
-                    });
+                    var chkReg = divReg.querySelector('.chk-filtro');
+                    var divProvContenitore = divReg.nextElementSibling;
+                    aggiornaStatoCheckboxPadri(chkReg, divProvContenitore);
                 });
             }
 
