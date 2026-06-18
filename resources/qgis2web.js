@@ -1,14 +1,20 @@
 // =========================================================================
-// 1. CONFIGURAZIONE DELLA VISTA (EXTENT COMPLETA EUROPA - SENZA VINCOLI DI CENTRO)
+// 1. CONFIGURAZIONE DELLA VISTA E ZOOM SELEZIONABILI (RETTANGOLO ITALIA)
 // =========================================================================
+// Spostiamo il centro visivo più a Nord e Ovest (zona Toscana/Emilia) 
+// per bilanciare la forma allungata dell'Italia nello schermo.
+var centroMappa = ol.proj.fromLonLat([11.8000, 43.3000]); 
 
-// Confini geografici calibrati per l'intera Europa [MinLon, MinLat, MaxLon, MaxLat]
-var confiniEuropaGradi = [-31.2, 27.6, 39.0, 71.2];
-var confiniBloccatiEuropa = ol.extent.applyTransform(confiniEuropaGradi, ol.proj.getTransform('EPSG:4326', 'EPSG:3857'));
+// I CONFINI REALI DELL'ITALIA IN GRADI (WGS 84) calibrati su un rettangolo stretto
+// [Longitudine Ovest, Latitudine Sud, Longitudine Est, Latitudine Nord]
+var confiniGradi = [6.0, 35.0, 19.5, 47.5];
 
-// Zoom iniziale largo per inquadrare l'estensione scelta
-var zoomDesktopScelto = 4;  
-var zoomMobileScelto  = 3.5;  
+// Convertiamo l'extent nel sistema metrico EPSG:3857 usato dalla mappa
+var confiniBloccatiItalia = ol.extent.applyTransform(confiniGradi, ol.proj.getTransform('EPSG:4326', 'EPSG:3857'));
+
+// REGOLA QUI LO ZOOM: Valori nativi ottimizzati per il rettangolo Italia
+var zoomDesktopScelto = 5.6;  // Prova 5.8 per stringere, 5.4 per allargare su PC
+var zoomMobileScelto  = 4.6;  // Ottimale per schermi verticali smartphone
 
 var isSmallScreen = window.innerWidth < 650;
 var zoomFinale = isSmallScreen ? zoomMobileScelto : zoomDesktopScelto;
@@ -17,14 +23,16 @@ var doHover = false;
 var doHighlight = false;  
 
 var vistaIniziale = new ol.View({
+    center: centroMappa,
     zoom: zoomFinale,
+    minZoom: zoomFinale,           // Impedisce di zoomare indietro oltre l'inquadratura iniziale dell'Italia
     maxZoom: 28, 
-    extent: confiniBloccatiEuropa, // La mappa si muove e si limita solo all'Europa
+    extent: confiniBloccatiItalia, // Limita il trascinamento e lo zoom out a questo rettangolo
     enableRotation: false
 });
 
 // =========================================================================
-// 2. INIZIALIZZAZIONE MAPPA E ADATTAMENTO ESTENSIONE
+// 2. INIZIALIZZAZIONE MAPPA E RIPRISTINO FORZATO VISTA
 // =========================================================================
 var map = new ol.Map({
     target: 'map',
@@ -33,12 +41,23 @@ var map = new ol.Map({
     view: vistaIniziale
 });
 
-// All'avvio la mappa si adatta perfettamente all'intera estensione europea impostata
+// Forzatura atomica post-rendering: sovrascrive i calcoli automatici dei layer vettoriali di QGIS
 map.once('postrender', function() {
     var view = map.getView();
-    view.fit(confiniBloccatiEuropa, { size: map.getSize() });
+    view.setCenter(centroMappa);
+    view.setZoom(zoomFinale);
+    // Riapplica il vincolo di minZoom per sicurezza dopo la forzatura
+    view.setMinZoom(zoomFinale); 
 });
 
+// Vincolo di movimento: centra l'utente se tenta di trascinare la mappa fuori dal rettangolo italiano
+map.getView().on('change:center', function() {
+    var view = map.getView();
+    var center = view.getCenter();
+    if (!ol.extent.containsCoordinate(confiniBloccatiItalia, center)) {
+        view.setCenter(centroMappa); 
+    }
+});
 // =========================================================================
 // 3. GESTIONE CURSORE
 // =========================================================================
