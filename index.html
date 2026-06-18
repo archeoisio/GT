@@ -296,6 +296,14 @@
                 <div id="cont-musei" class="contenitore-sezione">
                     <div id="albero-musei"></div>
                 </div>
+
+                <div id="titolo-tecnicopratica" class="titolo-sezione" style="margin-top:15px;">
+                    <span class="freccia-albero" style="margin-right: 5px;">►</span>
+                    Tecnico-Pratica <span id="cnt-tot-tecnicopratica" class="badge-conteggio"></span>
+                </div>
+                <div id="cont-tecnicopratica" class="contenitore-sezione">
+                    <div id="albero-tecnicopratica"></div>
+                </div>
             </div>
         </div>
 
@@ -305,21 +313,31 @@
         <script src="./resources/ol-layerswitcher.js"></script>
         <script src="resources/photon-geocoder-autocomplete.min.js"></script>
         <script src="resources/olms.js"></script>
-        <script src="layers/regioni_1.js"></script><script src="layers/unitaterritorialisovracomunali_2.js"></script><script src="layers/museiguidavol2_4.js"></script><script src="layers/sitiguidavol2_5.js"></script>
-        <script src="styles/regioni_1_style.js"></script><script src="styles/unitaterritorialisovracomunali_2_style.js"></script><script src="styles/comuni_3_style.js"></script><script src="styles/museiguidavol2_4_style.js"></script><script src="styles/sitiguidavol2_5_style.js"></script>
+        
+        <script src="layers/sititecnicopratica.js"></script>
+        <script src="layers/regioni_1.js"></script>
+        <script src="layers/unitaterritorialisovracomunali_2.js"></script>
+        <script src="layers/museiguidavol2_4.js"></script>
+        <script src="layers/sitiguidavol2_5.js"></script>
+        
+        <script src="styles/regioni_1_style.js"></script>
+        <script src="styles/unitaterritorialisovracomunali_2_style.js"></script>
+        <script src="styles/comuni_3_style.js"></script>
+        <script src="styles/museiguidavol2_4_style.js"></script>
+        <script src="styles/sitiguidavol2_5_style.js"></script>
         <script src="./layers/layers.js" type="text/javascript"></script> 
         <script src="./resources/Autolinker.min.js"></script>
         <script src="./resources/qgis2web.js"></script>        
 
         <script>
         (function() {
-            // AGGIORNATO: URL con il nuovo script fornito
             var URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwREb6t_Ri-ioN5j8U954M4IwyWf2nYFKWOLY_3omHB4UaNbkj2kCsEbw8K1RbnyPchbw/exec";
             var datiLingueOnline = {};
 
             var datiLivelli = {
                 siti: { tutte: [], disattivate: [], campoNome: 'Sito/Museo', sorgenteOL: null },
-                musei: { tutte: [], disattivate: [], campoNome: 'Museo', sorgenteOL: null }
+                musei: { tutte: [], disattivate: [], campoNome: 'Museo', sorgenteOL: null },
+                tecnicopratica: { tutte: [], disattivate: [], campoNome: 'Sito/Museo', sorgenteOL: null } // Aggiunto record interno
             };
 
             // LOGICA DI RESET DELLA VISTA SULLA MAPPA (HOME)
@@ -344,7 +362,7 @@
                 }
             });
 
-            // Gestione apertura/chiusura macro-sezioni (Siti / Musei)
+            // Gestione apertura/chiusura macro-sezioni
             function impostaToggleMacroSezione(idTitolo, idContenitore) {
                 document.getElementById(idTitolo).addEventListener('click', function(e) {
                     if(e.target.classList.contains('badge-conteggio')) return;
@@ -362,6 +380,7 @@
             }
             impostaToggleMacroSezione('titolo-siti', 'cont-siti');
             impostaToggleMacroSezione('titolo-musei', 'cont-musei');
+            impostaToggleMacroSezione('titolo-tecnicopratica', 'cont-tecnicopratica'); // Attivato toggle
 
             function scaricaDatiOnlineEInizializza() {
                 fetch(URL_GOOGLE_SCRIPT)
@@ -376,9 +395,7 @@
                     });
             }
 
-            // AGGIORNATO: Aggiunto il parametro regioneElemento
             function inviaAggiornamentoOnline(nomeElemento, codiceLingua, valoreStato, regioneElemento) {
-                // Sincronizza subito anche lo stato locale per reattività immediata
                 if (!datiLingueOnline[nomeElemento]) datiLingueOnline[nomeElemento] = {};
                 datiLingueOnline[nomeElemento][codiceLingua] = valoreStato;
 
@@ -388,14 +405,13 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ 
                         elemento: nomeElemento, 
-                        lingua: codiceLingua, 
+                        media: codiceLingua, 
                         stato: valoreStato,
-                        regione: regioneElemento // <-- Inviato a Google Sheets
+                        regione: regioneElemento
                     })
                 });
             }
 
-            // Estrattore booleano sicuro indispensabile per interpretare correttamente i dati da Excel
             function estraiStatoBooleano(obj, chiave) {
                 if (!obj || obj[chiave] === undefined) return false;
                 var val = obj[chiave];
@@ -415,15 +431,30 @@
                     });
                     datiLivelli.musei.sorgenteOL = jsonSource_museiguidavol2_4;
                 }
+                // Inizializzazione dinamica del nuovo layer Tecnico Pratica
+                if (typeof format_sititecnicopratica_5 !== 'undefined' && typeof json_tecnicopratica_5 !== 'undefined') {
+                    datiLivelli.tecnicopratica.tutte = format_sititecnicopratica_5.readFeatures(json_tecnicopratica_5, {
+                        dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857'
+                    });
+                    datiLivelli.tecnicopratica.sorgenteOL = jsonSource_sititecnicopratica_5;
+                } else if (typeof jsonSource_sititecnicopratica_5 !== 'undefined' && typeof json_tecnicopratica_5 !== 'undefined') {
+                    // Fallback se QGIS2Web usa lo stesso format per i vettori puntuali
+                    var formatoPunti = typeof format_sitiguidavol2_5 !== 'undefined' ? format_sitiguidavol2_5 : new ol.format.GeoJSON();
+                    datiLivelli.tecnicopratica.tutte = formatoPunti.readFeatures(json_tecnicopratica_5, {
+                        dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857'
+                    });
+                    datiLivelli.tecnicopratica.sorgenteOL = jsonSource_sititecnicopratica_5;
+                }
 
                 costruisciAlbero('siti', 'albero-siti');
                 costruisciAlbero('musei', 'albero-musei');
+                costruisciAlbero('tecnicopratica', 'albero-tecnicopratica'); // Costruzione albero
                 aggiornaConteggiEFiltraggio();
             }
 
             function costruisciAlbero(tipo, idContenitore) {
                 var container = document.getElementById(idContenitore);
-                if (!container || datiLivelli[tipo].tutte.length === 0) {
+                if (!container || !datiLivelli[tipo] || datiLivelli[tipo].tutte.length === 0) {
                     if (container) container.innerHTML = '<em>Nessun dato</em>';
                     return;
                 }
@@ -549,9 +580,8 @@
                             lblContenitore.appendChild(lblPto);
                             divPto.appendChild(lblContenitore);
 
-                            // --- CONTENITORE AZIONI (ZOOM + 2 BANDIERE CHK) ---
                             var divAzioni = document.createElement('div');
-                            divAzioni.className = 'contenitore-actions-punto';
+                            divAzioni.className = 'contenitore-azioni-punto';
                             divAzioni.style.display = 'flex';
                             divAzioni.style.alignItems = 'center';
                             divAzioni.style.gap = '4px';
@@ -577,12 +607,10 @@
                             });
                             divAzioni.appendChild(btnZoom);
 
-                            // Recupero stati online pregressi
                             var recordPuntoOnline = datiLingueOnline[nomePunto];
                             var statoItaSalvato = estraiStatoBooleano(recordPuntoOnline, 'ita');
                             var statoIngSalvato = estraiStatoBooleano(recordPuntoOnline, 'ing');
 
-                            // Checkbox ITA
                             var lblIta = document.createElement('label');
                             lblIta.className = 'label-bandiera';
                             lblIta.innerHTML = '🇮🇹';
@@ -590,14 +618,12 @@
                             chkIta.type = 'checkbox';
                             chkIta.className = 'chk-lingua';
                             chkIta.checked = statoItaSalvato;
-                            // AGGIURNATO: passa 'regione'
                             chkIta.addEventListener('change', function() {
                                 inviaAggiornamentoOnline(nomePunto, "ita", this.checked, regione);
                             });
                             lblIta.appendChild(chkIta);
                             divAzioni.appendChild(lblIta);
 
-                            // Checkbox ING
                             var lblIng = document.createElement('label');
                             lblIng.className = 'label-bandiera';
                             lblIng.innerHTML = '🇬🇧';
@@ -605,7 +631,6 @@
                             chkIng.type = 'checkbox';
                             chkIng.className = 'chk-lingua';
                             chkIng.checked = statoIngSalvato;
-                            // AGGIURNATO: passa 'regione'
                             chkIng.addEventListener('change', function() {
                                 inviaAggiornamentoOnline(nomePunto, "ing", this.checked, regione);
                             });
@@ -652,9 +677,9 @@
             }
 
             function aggiornaConteggiEFiltraggio() {
-                ['siti', 'musei'].forEach(function(tipo) {
+                ['siti', 'musei', 'tecnicopratica'].forEach(function(tipo) {
                     var configurazione = datiLivelli[tipo];
-                    if (configurazione.tutte.length === 0) return;
+                    if (!configurazione || configurazione.tutte.length === 0) return;
 
                     var attive = configurazione.tutte.filter(function(f) {
                         return configurazione.disattivate.indexOf(f.get(configurazione.campoNome)) === -1;
