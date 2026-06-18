@@ -33,6 +33,14 @@
             background-color: rgba(255,255,255,.4) !important;
             padding: 2px !important;
         } 
+        /* Controlli nativi dello zoom spostati a destra del pannello */
+        .ol-zoom {
+            top: 15px !important;
+            left: 310px !important;
+        }
+        .ol-attribution {
+            max-width: calc(100% - 320px) !important;
+        }
         </style>
 
         <style>
@@ -42,59 +50,157 @@
             padding: 0;
             margin: 0;
         }
-        /* Stili per il pannello di controllo delle singole feature */
+        /* Stili per il pannello di controllo filtri */
         .pannello-features {
             position: absolute; 
             top: 10px; 
-            right: 10px; 
+            left: 10px; 
             z-index: 1000; 
             background: white; 
-            padding: 15px; 
-            border-radius: 5px; 
+            padding: 12px; 
+            border-radius: 6px; 
             max-height: calc(100% - 40px); 
-            overflow-y: auto; 
-            box-shadow: 0 0 15px rgba(0,0,0,0.2); 
+            overflow-y: hidden; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25); 
             width: 280px; 
             font-family: 'Open Sans', sans-serif; 
             font-size: 13px;
             color: #333;
+            transition: max-height 0.3s ease, width 0.3s ease, padding 0.3s ease;
         }
-        .pannello-features h4 {
-            margin-top: 0; 
-            margin-bottom: 12px; 
+        .pannello-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border-bottom: 2px solid #0066cc; 
             padding-bottom: 5px;
-            font-size: 14px;
+            margin-bottom: 10px;
         }
-        .pannello-features h5 {
+        .pannello-header h4 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .btn-toggle-pannello {
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            cursor: pointer;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .btn-toggle-pannello:hover {
+            background: #e0e0e0;
+        }
+        .pannello-corpo {
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+        .pannello-features.ridotto {
+            max-height: 40px !important;
+            overflow: hidden !important;
+            width: 160px !important;
+            padding-bottom: 0 !important;
+        }
+        .pannello-features.ridotto .pannello-corpo {
+            display: none !important;
+        }
+        .titolo-sezione {
             margin-top: 10px;
             margin-bottom: 6px;
+            color: #0066cc;
+            font-weight: bold;
+            font-size: 13px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 2px;
+        }
+        
+        /* Stili per la struttura ad albero collassabile */
+        .nodo-regione {
+            font-weight: bold;
+            background: #f5f5f5;
+            padding: 4px 5px;
+            margin-top: 5px;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+        }
+        .nodo-provincia {
+            font-weight: normal;
+            margin-left: 15px;
+            padding: 3px 0;
+            display: flex;
+            align-items: center;
             color: #555;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
-        .sezione-lista {
-            margin-bottom: 15px;
-            max-height: 200px;
-            overflow-y: auto;
-            border: 1px solid #eee;
-            padding: 5px;
-            background: #fafafa;
-        }
-        .riga-checkbox {
+        .nodo-punto {
+            font-weight: normal;
+            margin-left: 35px;
+            padding: 2px 0;
             display: flex;
             align-items: flex-start;
-            margin-bottom: 6px;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
         }
-        .riga-checkbox input {
-            margin-right: 6px;
+        
+        /* Icone per espandere/comprimere */
+        .freccia-albero {
+            display: inline-block;
+            width: 12px;
+            cursor: pointer;
+            font-family: monospace;
+            font-size: 11px;
+            color: #777;
+            user-select: none;
+            margin-right: 2px;
+        }
+        .freccia-albero:hover {
+            color: #0066cc;
+        }
+        
+        /* Contenitori dei figli (nascosti di default) */
+        .contenitore-figli {
+            display: none; /* Inizialmente chiuso */
+        }
+        .contenitore-figli.aperto {
+            display: block; /* Mostrato quando aperto */
+        }
+
+        .lbl-contenitore-punto {
+            display: flex;
+            align-items: flex-start;
+            max-width: 84%;
+        }
+        .chk-filtro {
+            margin-right: 5px;
             margin-top: 2px;
             cursor: pointer;
         }
-        .riga-checkbox label {
+        .lbl-filtro {
             cursor: pointer;
-            line-height: 1.3;
+            user-select: none;
+            line-height: 1.2;
+        }
+        .badge-conteggio {
+            font-size: 11px;
+            color: #666;
+            font-weight: normal;
+            margin-left: 4px;
+        }
+        .btn-zoom-punto {
+            background: none;
+            border: none;
+            color: #0066cc;
+            cursor: pointer;
+            padding: 0 4px;
+            font-size: 12px;
+            line-height: 1;
+            margin-top: 1px;
+        }
+        .btn-zoom-punto:hover {
+            color: #004499;
         }
         </style>
         <title></title>
@@ -107,14 +213,18 @@
             </div>
         </div>
 
-        <div class="pannello-features">
-            <h4>Filtro Elementi</h4>
-            
-            <h5>Siti Guida</h5>
-            <div id="lista-checkbox-siti" class="sezione-lista">Caricamento siti...</div>
+        <div id="pnl-filtri" class="pannello-features">
+            <div class="pannello-header">
+                <h4>Filtro Elementi</h4>
+                <button id="btn-toggle-pnl" class="btn-toggle-pannello">—</button>
+            </div>
+            <div class="pannello-corpo">
+                <div class="titolo-sezione">Siti <span id="cnt-tot-siti" class="badge-conteggio"></span></div>
+                <div id="albero-siti"></div>
 
-            <h5>Musei Guida</h5>
-            <div id="lista-checkbox-musei" class="sezione-lista">Caricamento musei...</div>
+                <div class="titolo-sezione" style="margin-top:15px;">Musei <span id="cnt-tot-musei" class="badge-conteggio"></span></div>
+                <div id="albero-musei"></div>
+            </div>
         </div>
 
         <script src="resources/qgis2web_expressions.js"></script>
@@ -131,88 +241,310 @@
 
         <script>
         (function() {
-            var sitiNascosti = [];
-            var museiNascosti = [];
-            var tutteLeFeaturesSiti = [];
-            var tutteLeFeaturesMusei = [];
+            var datiLivelli = {
+                siti: { tutte: [], disattivate: [], campoNome: 'Sito/Museo', sorgenteOL: null },
+                musei: { tutte: [], disattivate: [], campoNome: 'Museo', sorgenteOL: null }
+            };
 
-            function inizializzaFiltri() {
-                // Estrariamo e leggiamo in memoria le feature originarie dei Siti
+            // Gestione apertura/chiusura del pannello principale
+            document.getElementById('btn-toggle-pnl').addEventListener('click', function() {
+                var pnl = document.getElementById('pnl-filtri');
+                if (pnl.classList.contains('ridotto')) {
+                    pnl.classList.remove('ridotto');
+                    this.textContent = '—';
+                } else {
+                    pnl.classList.add('ridotto');
+                    this.textContent = '❑';
+                }
+            });
+
+            function inizializzaFiltriAvanzati() {
                 if (typeof format_sitiguidavol2_5 !== 'undefined' && typeof json_sitiguidavol2_5 !== 'undefined') {
-                    tutteLeFeaturesSiti = format_sitiguidavol2_5.readFeatures(json_sitiguidavol2_5, {
-                        dataProjection: 'EPSG:4326', 
-                        featureProjection: 'EPSG:3857'
+                    datiLivelli.siti.tutte = format_sitiguidavol2_5.readFeatures(json_sitiguidavol2_5, {
+                        dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857'
                     });
+                    datiLivelli.siti.sorgenteOL = jsonSource_sitiguidavol2_5;
                 }
-                
-                // Estrariamo e leggiamo in memoria le feature originarie dei Musei
                 if (typeof format_museiguidavol2_4 !== 'undefined' && typeof json_museiguidavol2_4 !== 'undefined') {
-                    tutteLeFeaturesMusei = format_museiguidavol2_4.readFeatures(json_museiguidavol2_4, {
-                        dataProjection: 'EPSG:4326', 
-                        featureProjection: 'EPSG:3857'
+                    datiLivelli.musei.tutte = format_museiguidavol2_4.readFeatures(json_museiguidavol2_4, {
+                        dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857'
                     });
+                    datiLivelli.musei.sorgenteOL = jsonSource_museiguidavol2_4;
                 }
 
-                generaLista('Sito/Museo', tutteLeFeaturesSiti, 'lista-checkbox-siti', sitiNascosti, jsonSource_sitiguidavol2_5);
-                generaLista('Museo', tutteLeFeaturesMusei, 'lista-checkbox-musei', museiNascosti, jsonSource_museiguidavol2_4);
+                costruisciAlbero('siti', 'albero-siti');
+                costruisciAlbero('musei', 'albero-musei');
+                aggiornaConteggiEFiltraggio();
             }
 
-            function generaLista(campoNome, elencoFeatures, idContenitore, arrayNascosti, sorgenteOL) {
+            function costruisciAlbero(tipo, idContenitore) {
                 var container = document.getElementById(idContenitore);
-                if (!container || elencoFeatures.length === 0) {
-                    if (container) container.innerHTML = '<em style="color:#999;">Nessun dato trovato</em>';
+                if (!container || datiLivelli[tipo].tutte.length === 0) {
+                    if (container) container.innerHTML = '<em>Nessun dato</em>';
                     return;
                 }
                 container.innerHTML = '';
 
-                // Recuperiamo i nomi unici dei punti, filtrando i null ed ordinandoli alfabeticamente
-                var nomiUnici = elencoFeatures.map(function(f) {
-                    return f.get(campoNome);
-                }).filter(function(value, index, self) {
-                    return value && self.indexOf(value) === index;
-                }).sort();
+                var struttura = {};
+                datiLivelli[tipo].tutte.forEach(function(f) {
+                    var reg = f.get('Regione') || 'Non Specificata';
+                    var prov = f.get('Provincia') || 'Non Specificata';
+                    var nome = f.get(datiLivelli[tipo].campoNome);
+                    if (!nome) return;
 
-                nomiUnici.forEach(function(nome, idx) {
-                    var riga = document.createElement('div');
-                    riga.className = 'riga-checkbox';
+                    if (!struttura[reg]) struttura[reg] = {};
+                    if (!struttura[reg][prov]) struttura[reg][prov] = [];
+                    struttura[reg][prov].push(f);
+                });
 
-                    var chk = document.createElement('input');
-                    chk.type = 'checkbox';
-                    chk.id = idContenitore + '-' + idx;
-                    chk.checked = true;
+                Object.keys(struttura).sort().forEach(function(regione) {
+                    var idRegione = tipo + '-' + regione.replace(/\s+/g, '-');
+                    
+                    var divReg = document.createElement('div');
+                    divReg.className = 'nodo-regione';
+                    
+                    // Freccia per espandere la regione
+                    var frecciaReg = document.createElement('span');
+                    frecciaReg.className = 'freccia-albero';
+                    frecciaReg.innerHTML = '►'; // Icona di chiuso
+                    
+                    var chkReg = document.createElement('input');
+                    chkReg.type = 'checkbox';
+                    chkReg.className = 'chk-filtro';
+                    chkReg.id = idRegione;
+                    chkReg.checked = true;
+                    
+                    var lblReg = document.createElement('label');
+                    lblReg.className = 'lbl-filtro';
+                    lblReg.htmlFor = idRegione;
+                    lblReg.innerHTML = regione + ' <span id="cnt-' + idRegione + '" class="badge-conteggio">(0)</span>';
+                    
+                    divReg.appendChild(frecciaReg);
+                    divReg.appendChild(chkReg);
+                    divReg.appendChild(lblReg);
+                    container.appendChild(divReg);
 
-                    chk.addEventListener('change', function() {
-                        if (!this.checked) {
-                            if (arrayNascosti.indexOf(nome) === -1) arrayNascosti.push(nome);
+                    // Contenitore delle province (collassabile)
+                    var divProvContenitore = document.createElement('div');
+                    divProvContenitore.className = 'contenitore-figli';
+                    container.appendChild(divProvContenitore);
+
+                    // Evento click sulla freccia della regione per aprirla/chiuderla
+                    frecciaReg.addEventListener('click', function() {
+                        if (divProvContenitore.classList.contains('aperto')) {
+                            divProvContenitore.classList.remove('aperto');
+                            this.innerHTML = '►';
                         } else {
-                            var index = arrayNascosti.indexOf(nome);
-                            if (index > -1) arrayNascosti.splice(index, 1);
-                        }
-
-                        // Applichiamo il filtro sulla sorgente del layer
-                        var attive = elencoFeatures.filter(function(feature) {
-                            return arrayNascosti.indexOf(feature.get(campoNome)) === -1;
-                        });
-
-                        if (sorgenteOL) {
-                            sorgenteOL.clear();
-                            sorgenteOL.addFeatures(attive);
+                            divProvContenitore.classList.add('aperto');
+                            this.innerHTML = '▼';
                         }
                     });
 
-                    var lbl = document.createElement('label');
-                    lbl.htmlFor = chk.id;
-                    lbl.appendChild(document.createTextNode(nome));
+                    Object.keys(struttura[regione]).sort().forEach(function(provincia) {
+                        var idProvincia = idRegione + '-' + provincia.replace(/\s+/g, '-');
+                        
+                        var divProv = document.createElement('div');
+                        divProv.className = 'nodo-provincia';
+                        
+                        // Freccia per espandere la provincia
+                        var frecciaProv = document.createElement('span');
+                        frecciaProv.className = 'freccia-albero';
+                        frecciaProv.innerHTML = '►';
+                        
+                        var chkProv = document.createElement('input');
+                        chkProv.type = 'checkbox';
+                        chkProv.className = 'chk-filtro';
+                        chkProv.id = idProvincia;
+                        chkProv.checked = true;
+                        
+                        var lblProv = document.createElement('label');
+                        lblProv.className = 'lbl-filtro';
+                        lblProv.htmlFor = idProvincia;
+                        lblProv.innerHTML = provincia + ' <span id="cnt-' + idProvincia + '" class="badge-conteggio">(0)</span>';
+                        
+                        divProv.appendChild(frecciaProv);
+                        divProv.appendChild(chkProv);
+                        divProv.appendChild(lblProv);
+                        divProvContenitore.appendChild(divProv);
 
-                    riga.appendChild(chk);
-                    riga.appendChild(lbl);
-                    container.appendChild(riga);
+                        // Contenitore dei singoli punti (collassabile)
+                        var divPuntiContenitore = document.createElement('div');
+                        divPuntiContenitore.className = 'contenitore-figli';
+                        divProvContenitore.appendChild(divPuntiContenitore);
+
+                        // Evento click sulla freccia della provincia per aprirla/chiuderla
+                        frecciaProv.addEventListener('click', function() {
+                            if (divPuntiContenitore.classList.contains('aperto')) {
+                                divPuntiContenitore.classList.remove('aperto');
+                                this.innerHTML = '►';
+                            } else {
+                                divPuntiContenitore.classList.add('aperto');
+                                this.innerHTML = '▼';
+                            }
+                        });
+
+                        struttura[regione][provincia].sort(function(a, b) {
+                            return a.get(datiLivelli[tipo].campoNome).localeCompare(b.get(datiLivelli[tipo].campoNome));
+                        }).forEach(function(f, idx) {
+                            var nomePunto = f.get(datiLivelli[tipo].campoNome);
+                            var idPunto = idProvincia + '-' + idx;
+
+                            var divPto = document.createElement('div');
+                            divPto.className = 'nodo-punto';
+
+                            var lblContenitore = document.createElement('div');
+                            lblContenitore.className = 'lbl-contenitore-punto';
+
+                            var chkPto = document.createElement('input');
+                            chkPto.type = 'checkbox';
+                            chkPto.className = 'chk-filtro chk-singolo-punto';
+                            chkPto.id = idPunto;
+                            chkPto.checked = true;
+                            chkPto.dataset.nome = nomePunto;
+
+                            var lblPto = document.createElement('label');
+                            lblPto.className = 'lbl-filtro';
+                            lblPto.htmlFor = idPunto;
+                            lblPto.appendChild(document.createTextNode(nomePunto));
+
+                            lblContenitore.appendChild(chkPto);
+                            lblContenitore.appendChild(lblPto);
+                            divPto.appendChild(lblContenitore);
+
+                            var btnZoom = document.createElement('button');
+                            btnZoom.className = 'btn-zoom-punto';
+                            btnZoom.title = 'Zoom sul sito';
+                            btnZoom.innerHTML = '🔍';
+                            
+                            btnZoom.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                var geometria = f.getGeometry();
+                                if (geometria && typeof map !== 'undefined') {
+                                    var coordinate = geometria.getCoordinates();
+                                    map.getView().animate({
+                                        center: coordinate,
+                                        zoom: 16,
+                                        duration: 800
+                                    });
+                                }
+                            });
+                            
+                            divPto.appendChild(btnZoom);
+                            divPuntiContenitore.appendChild(divPto);
+
+                            chkPto.addEventListener('change', function() {
+                                var dis = datiLivelli[tipo].disattivate;
+                                if (!this.checked) {
+                                    if (dis.indexOf(nomePunto) === -1) dis.push(nomePunto);
+                                } else {
+                                    var index = dis.indexOf(nomePunto);
+                                    if (index > -1) dis.splice(index, 1);
+                                }
+                                aggiornaStatoCheckboxPadri(chkProv, divPuntiContenitore);
+                                aggiornaStatoCheckboxPadri(chkReg, divProvContenitore);
+                                aggiornaConteggiEFiltraggio();
+                            });
+                        });
+
+                        chkProv.addEventListener('change', function() {
+                            var checked = this.checked;
+                            var subChks = divPuntiContenitore.querySelectorAll('.chk-singolo-punto');
+                            subChks.forEach(function(c) {
+                                if (c.checked !== checked) {
+                                    c.checked = checked;
+                                    var n = c.dataset.nome;
+                                    var dis = datiLivelli[tipo].disattivate;
+                                    if (!checked) {
+                                        if (dis.indexOf(n) === -1) dis.push(n);
+                                    } else {
+                                        var idx = dis.indexOf(n);
+                                        if (idx > -1) dis.splice(idx, 1);
+                                    }
+                                }
+                            });
+                            aggiornaStatoCheckboxPadri(chkReg, divProvContenitore);
+                            aggiornaConteggiEFiltraggio();
+                        });
+                    });
+
+                    chkReg.addEventListener('change', function() {
+                        var checked = this.checked;
+                        var allChks = divProvContenitore.querySelectorAll('.chk-filtro');
+                        allChks.forEach(function(c) {
+                            c.checked = checked;
+                            if (c.classList.contains('chk-singolo-punto')) {
+                                var n = c.dataset.nome;
+                                var dis = datiLivelli[tipo].disattivate;
+                                if (!checked) {
+                                    if (dis.indexOf(n) === -1) dis.push(n);
+                                } else {
+                                    var idx = dis.indexOf(n);
+                                    if (idx > -1) dis.splice(idx, 1);
+                                }
+                            }
+                        });
+                        aggiornaConteggiEFiltraggio();
+                    });
                 });
             }
 
-            // Avvio sincronizzato col caricamento della pagina e delle librerie QGIS2web
+            function aggiornaStatoCheckboxPadri(chkPadre, contenitoreFigli) {
+                var totali = contenitoreFigli.querySelectorAll('.chk-filtro');
+                var accesi = contenitoreFigli.querySelectorAll('.chk-filtro:checked');
+                if (accesi.length === 0) {
+                    chkPadre.checked = false;
+                    chkPadre.indeterminate = false;
+                } else if (accesi.length === totali.length) {
+                    chkPadre.checked = true;
+                    chkPadre.indeterminate = false;
+                } else {
+                    chkPadre.checked = false;
+                    chkPadre.indeterminate = true;
+                }
+            }
+
+            function aggiornaConteggiEFiltraggio() {
+                ['siti', 'musei'].forEach(function(tipo) {
+                    var configurazione = datiLivelli[tipo];
+                    if (configurazione.tutte.length === 0) return;
+
+                    var attive = configurazione.tutte.filter(function(f) {
+                        return configurazione.disattivate.indexOf(f.get(configurazione.campoNome)) === -1;
+                    });
+
+                    if (configurazione.sorgenteOL) {
+                        configurazione.sorgenteOL.clear();
+                        configurazione.sorgenteOL.addFeatures(attive);
+                    }
+
+                    document.getElementById('cnt-tot-' + tipo).textContent = '(' + attive.length + '/' + configurazione.tutte.length + ')';
+
+                    var nodiRegione = document.querySelectorAll('#albero-' + tipo + ' .nodo-regione input');
+                    nodiRegione.forEach(function(chkReg) {
+                        var divProvCont = chkReg.parentElement.nextElementSibling;
+                        var nodiProvincia = divProvCont.querySelectorAll('.nodo-provincia input');
+                        
+                        var totRegAttive = 0;
+                        var totRegGlobali = 0;
+
+                        nodiProvincia.forEach(function(chkProv) {
+                            var divPuntiCont = chkProv.parentElement.nextElementSibling;
+                            var ptiTot = divPuntiCont.querySelectorAll('.chk-singolo-punto').length;
+                            var ptiAttivi = divPuntiCont.querySelectorAll('.chk-singolo-punto:checked').length;
+                            
+                            document.getElementById('cnt-' + chkProv.id).textContent = '(' + ptiAttivi + '/' + ptiTot + ')';
+                            
+                            totRegAttive += ptiAttivi;
+                            totRegGlobali += ptiTot;
+                        });
+
+                        document.getElementById('cnt-' + chkReg.id).textContent = '(' + totRegAttive + '/' + totRegGlobali + ')';
+                    });
+                });
+            }
+
             window.addEventListener('DOMContentLoaded', function() {
-                setTimeout(inizializzaFiltri, 600);
+                setTimeout(inizializzaFiltriAvanzati, 600);
             });
         })();
         </script>
