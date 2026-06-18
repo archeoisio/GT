@@ -23,17 +23,17 @@ var style_sititecnicopratica = function(feature, resolution){
     var style = [ new ol.style.Style({
         // Cambiata la stella con un cerchio per differenziare i Siti dai Musei
         image: new ol.style.Circle({
-            radius: 7.0 + size,
+            radius: 6.0 + size,
             displacement: [0, 0],
             stroke: new ol.style.Stroke({
-                color: 'rgba(35,35,35,1.0)', 
+                color: 'rgba(0, 0, 0, 1.0)', 
                 lineDash: null, 
                 lineCap: 'butt', 
                 lineJoin: 'miter', 
                 width: 1.0
             }),
             fill: new ol.style.Fill({
-                color: 'rgba(0, 120, 255, 1.0)' // Colore Azzurro/Blu
+                color: 'rgba(255, 0, 0, 1.0)' // Colore Rosso
             })
         }),
         text: createTextStyle(feature, resolution, labelText, labelFont,
