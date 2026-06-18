@@ -76,39 +76,48 @@ cluster_sitiguidavol2_5 = new ol.source.Cluster({
     },
     
     createCluster: function(features) {
-        // Se non ci sono feature, usiamo il comportamento standard nativo di OpenLayers (NIENTE crash!)
-        if (!features || features.length === 0) {
+        // Se non ci sono feature valide, delega al comportamento nativo sicuro
+        if (!features || features.length === 0 || !features[0] || typeof features[0].get !== 'function') {
             return ol.source.Cluster.prototype.createCluster.call(this, features);
         }
         
-        // Prendiamo la regione di riferimento dal primo punto del gruppo
-        var primoPunto = features[0];
-        if (!primoPunto || typeof primoPunto.get !== 'function') {
+        var regioneTarget = features[0].get('Regione');
+        if (!regioneTarget) {
             return ol.source.Cluster.prototype.createCluster.call(this, features);
         }
         
-        var regioneTarget = primoPunto.get('Regione');
-        
-        // Teniamo solo i punti che appartengono alla STESSA regione
+        // Filtra i punti tenendo solo quelli della stessa regione
         var featuresFiltrate = features.filter(function(f) {
             return f && typeof f.get === 'function' && f.get('Regione') === regioneTarget;
         });
         
-        // Se il filtro svuota tutto, passiamo l'array vuoto al gestore nativo
         if (featuresFiltrate.length === 0) {
             return ol.source.Cluster.prototype.createCluster.call(this, featuresFiltrate);
         }
         
-        // Calcoliamo il centro geometrico (coordinate medie)
+        // Calcolo del centro geometrico con CONTROLLO DI SICUREZZA RIGIDO SULLE COORDINATE
         var x = 0, y = 0;
-        featuresFiltrate.forEach(function(f) {
-            var coord = f.getGeometry().getCoordinates();
-            x += coord[0];
-            y += coord[1];
-        });
-        var centroCluster = [x / featuresFiltrate.length, y / featuresFiltrate.length];
+        var puntiValidi = 0;
         
-        // Generiamo il cluster finale come richiesto da OpenLayers
+        featuresFiltrate.forEach(function(f) {
+            if (f && f.getGeometry() && typeof f.getGeometry().getCoordinates === 'function') {
+                var coord = f.getGeometry().getCoordinates();
+                // Controllo fondamentale: verifica che coord esista e abbia una coordinata X e Y valida
+                if (coord && Array.isArray(coord) && coord.length >= 2) {
+                    x += coord[0];
+                    y += coord[1];
+                    puntiValidi++;
+                }
+            }
+        });
+        
+        // Se nessun punto aveva coordinate valide, usa il fallback nativo per non rompere il rendering
+        if (puntiValidi === 0) {
+            return ol.source.Cluster.prototype.createCluster.call(this, featuresFiltrate);
+        }
+        
+        var centroCluster = [x / puntiValidi, y / puntiValidi];
+        
         return new ol.Feature({
             geometry: new ol.geom.Point(centroCluster),
             features: featuresFiltrate
