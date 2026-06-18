@@ -8,7 +8,7 @@ var confiniGradi = [6.0, 35.0, 19.0, 47.5];
 var confiniBloccatiItalia = ol.extent.applyTransform(confiniGradi, ol.proj.getTransform('EPSG:4326', 'EPSG:3857'));
 
 // REGOLA QUI LO ZOOM: Ora risponderà istantaneamente ai comandi
-var zoomDesktopScelto = 5.5;  // Cambia questo valore (es. 5.0 più lontano, 6.5 più vicino) per testare
+var zoomDesktopScelto = 1;  // Cambia questo valore (es. 5.0 più lontano, 6.5 più vicino) per testare
 var zoomMobileScelto  = 4.5;  
 
 var isSmallScreen = window.innerWidth < 650;
