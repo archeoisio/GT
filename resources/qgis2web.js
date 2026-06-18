@@ -3,7 +3,8 @@ var map = new ol.Map({
     renderer: 'canvas',
     layers: layersList,
     view: new ol.View({
-         maxZoom: 28, minZoom: 1
+         maxZoom: 28, 
+         minZoom: 1 // Lascia pure 1 qui inizialmente
     })
 });
 
@@ -13,6 +14,12 @@ map.getView().fit(
     { size: map.getSize(), padding: [40, 10, 20, 10] }
 );
 
+// --- COPIA E INCOLLA QUESTE RIGHE SUBITO SOTTO IL FIT ---
+// 1. Recuperiamo lo zoom esatto che OpenLayers ha appena calcolato per far entrare l'Italia
+var zoomInizialeCalcolato = map.getView().getZoom();
+
+// 2. Blocchiamo il minZoom a questo valore specifico, impedendo di andare oltre
+map.getView().setMinZoom(zoomInizialeCalcolato);
 // full zooms only
 map.getView().setProperties({constrainResolution: true});
 
