@@ -22,7 +22,7 @@ var doHighlight = false;
 var vistaIniziale = new ol.View({
     center: centroMappa,
     zoom: zoomFinale,
-    minZoom: 4.0, // Impedisce all'utente di perdersi nello spazio facendo troppo zoom indietro
+    minZoom: 1.0, // Impedisce all'utente di perdersi nello spazio facendo troppo zoom indietro
     maxZoom: 28, 
     extent: confiniBloccatiItalia, 
     enableRotation: false
