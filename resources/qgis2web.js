@@ -1,14 +1,14 @@
 // =========================================================================
-// 1. CONFIGURAZIONE DELLA VISTA E ZOOM SELEZIONABILI (INQUADRATURA TOTALE)
+// 1. CONFIGURAZIONE DELLA VISTA (EXTENT COMPLETA EUROPA - SENZA VINCOLI DI CENTRO)
 // =========================================================================
 
-// Confini geografici (Extent) calibrati per contenere l'Italia permettendo lo zoom indietro corretto
-var confiniGradi = [3.0, 34.5, 20.5, 48.0];
-var confiniBloccatiItalia = ol.extent.applyTransform(confiniGradi, ol.proj.getTransform('EPSG:4326', 'EPSG:3857'));
+// Confini geografici calibrati per l'intera Europa [MinLon, MinLat, MaxLon, MaxLat]
+var confiniEuropaGradi = [-31.2, 27.6, 39.0, 71.2];
+var confiniBloccatiEuropa = ol.extent.applyTransform(confiniEuropaGradi, ol.proj.getTransform('EPSG:4326', 'EPSG:3857'));
 
-// REGOLA QUI LO ZOOM: 5.5 è il valore perfetto per visualizzare tutta l'Italia su PC desktop
+// Zoom iniziale largo per inquadrare l'estensione scelta
 var zoomDesktopScelto = 4;  
-var zoomMobileScelto  = 4.5;  // Ottimale per schermi verticali degli smartphone
+var zoomMobileScelto  = 3.5;  
 
 var isSmallScreen = window.innerWidth < 650;
 var zoomFinale = isSmallScreen ? zoomMobileScelto : zoomDesktopScelto;
@@ -17,16 +17,14 @@ var doHover = false;
 var doHighlight = false;  
 
 var vistaIniziale = new ol.View({
-    center: centroMappa,
     zoom: zoomFinale,
-    minZoom: 4.8, // Impedisce di allontanarsi troppo evitando l'effetto "mappa persa nel vuoto grigio"
     maxZoom: 28, 
-    extent: confiniBloccatiItalia, 
+    extent: confiniBloccatiEuropa, // La mappa si muove e si limita solo all'Europa
     enableRotation: false
 });
 
 // =========================================================================
-// 2. INIZIALIZZAZIONE MAPPA E RIPRISTINO FORZATO VISTA
+// 2. INIZIALIZZAZIONE MAPPA E ADATTAMENTO ESTENSIONE
 // =========================================================================
 var map = new ol.Map({
     target: 'map',
@@ -35,20 +33,10 @@ var map = new ol.Map({
     view: vistaIniziale
 });
 
-// Forzatura post-rendering: sovrascrive i file di configurazione nativi dei vettoriali di QGIS
+// All'avvio la mappa si adatta perfettamente all'intera estensione europea impostata
 map.once('postrender', function() {
     var view = map.getView();
-    view.setCenter(centroMappa);
-    view.setZoom(zoomFinale);
-});
-
-// Vincolo di movimento: centra l'utente se tenta di trascinare la mappa fuori dalla penisola
-map.getView().on('change:center', function() {
-    var view = map.getView();
-    var center = view.getCenter();
-    if (!ol.extent.containsCoordinate(confiniBloccatiItalia, center)) {
-        view.setCenter(centroMappa); 
-    }
+    view.fit(confiniBloccatiEuropa, { size: map.getSize() });
 });
 
 // =========================================================================
