@@ -1,20 +1,19 @@
 // =========================================================================
-// 1. CONFIGURAZIONE DELLA VISTA E ZOOM SELEZIONABILI (RETTANGOLO ITALIA)
+// 1. CONFIGURAZIONE DELLA VISTA E ZOOM (RETTANGOLO AMPIO EUROPA-MEDITERRANEO)
 // =========================================================================
-// Spostiamo il centro visivo più a Nord e Ovest (zona Toscana/Emilia) 
-// per bilanciare la forma allungata dell'Italia nello schermo.
-var centroMappa = ol.proj.fromLonLat([11.8000, 43.3000]); 
+// Centro perfetto sull'Italia (Calibrato sulla Toscana)
+var centroMappa = ol.proj.fromLonLat([12.5000, 42.5000]); 
 
-// I CONFINI REALI DELL'ITALIA IN GRADI (WGS 84) calibrati su un rettangolo stretto
-// [Longitudine Ovest, Latitudine Sud, Longitudine Est, Latitudine Nord]
-var confiniGradi = [6.0, 35.0, 19.5, 47.5];
+// Rettangolo IMMENSO (comprende Islanda, Russia, Nord Africa e Atlantico)
+// Questo permette a OpenLayers di usare zoom bassissimi (2 o 3) senza bloccarsi.
+var confiniGradiAmpio = [-35.0, 20.0, 45.0, 70.0];
 
-// Convertiamo l'extent nel sistema metrico EPSG:3857 usato dalla mappa
-var confiniBloccatiItalia = ol.extent.applyTransform(confiniGradi, ol.proj.getTransform('EPSG:4326', 'EPSG:3857'));
+// Convertiamo l'extent nel sistema metrico EPSG:3857 della mappa
+var confiniBloccatiMappa = ol.extent.applyTransform(confiniGradiAmpio, ol.proj.getTransform('EPSG:4326', 'EPSG:3857'));
 
-// REGOLA QUI LO ZOOM: Valori nativi ottimizzati per il rettangolo Italia
-var zoomDesktopScelto = 5.6;  // Prova 5.8 per stringere, 5.4 per allargare su PC
-var zoomMobileScelto  = 4.6;  // Ottimale per schermi verticali smartphone
+// REGOLA QUI LO ZOOM: Più il numero è basso, più la mappa è lontana
+var zoomDesktopScelto = 2.5;  // Zoom molto lontano per PC (Inquadra l'Italia al centro dell'area)
+var zoomMobileScelto  = 2.0;  // Zoom ancora più lontano per smartphone
 
 var isSmallScreen = window.innerWidth < 650;
 var zoomFinale = isSmallScreen ? zoomMobileScelto : zoomDesktopScelto;
@@ -25,9 +24,9 @@ var doHighlight = false;
 var vistaIniziale = new ol.View({
     center: centroMappa,
     zoom: zoomFinale,
-    minZoom: zoomFinale,           // Impedisce di zoomare indietro oltre l'inquadratura iniziale dell'Italia
+    minZoom: 1.5,                  // Permette di allontanarsi un altro po' se serve
     maxZoom: 28, 
-    extent: confiniBloccatiItalia, // Limita il trascinamento e lo zoom out a questo rettangolo
+    extent: confiniBloccatiMappa,  // Il grande recinto che evita il blocco dello zoom
     enableRotation: false
 });
 
@@ -41,6 +40,21 @@ var map = new ol.Map({
     view: vistaIniziale
 });
 
+// Forzatura post-rendering: obbliga la mappa a centrarsi sull'Italia allo zoom scelto
+map.once('postrender', function() {
+    var view = map.getView();
+    view.setCenter(centroMappa);
+    view.setZoom(zoomFinale);
+});
+
+// Vincolo di movimento: evita che l'utente si perda nell'oceano
+map.getView().on('change:center', function() {
+    var view = map.getView();
+    var center = view.getCenter();
+    if (!ol.extent.containsCoordinate(confiniBloccatiMappa, center)) {
+        view.setCenter(centroMappa); 
+    }
+});
 // Forzatura atomica post-rendering: sovrascrive i calcoli automatici dei layer vettoriali di QGIS
 map.once('postrender', function() {
     var view = map.getView();
