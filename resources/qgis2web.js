@@ -13,7 +13,7 @@ var zoomFinale = isSmallScreen ? zoomMobileScelto : zoomDesktopScelto;
 
 // Configurazione nativa: NO hover, SI click con evidenziatore attivo
 var doHover = false;     
-var doHighlight = true;  
+var doHighlight = false;  
 
 // =========================================================================
 // 2. INIZIALIZZAZIONE MAPPA
