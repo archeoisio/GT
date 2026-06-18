@@ -1,17 +1,15 @@
 // =========================================================================
-// 1. CONFIGURAZIONE DELLA VISTA E ZOOM SELEZIONABILI (CONFINI IN GRADI)
+// 1. CONFIGURAZIONE DELLA VISTA E ZOOM SELEZIONABILI (SBLOCCATO)
 // =========================================================================
-// Centro Italia convertito e calcolato per coordinate geografiche stabili
 var centroMappa = ol.proj.fromLonLat([12.5674, 41.8719]); 
 
-// I CONFINI DELL'ITALIA IN GRADI (WGS 84) convertiti al volo nel sistema della mappa
-// [Longitudine Ovest, Latitudine Sud, Longitudine Est, Latitudine Nord]
-var confiniGradi = [6.6266, 35.4929, 18.5204, 47.0921];
+// Confini leggermente più ampi per evitare che OpenLayers rifiuti i tuoi livelli di zoom
+var confiniGradi = [6.0, 35.0, 19.0, 47.5];
 var confiniBloccatiItalia = ol.extent.applyTransform(confiniGradi, ol.proj.getTransform('EPSG:4326', 'EPSG:3857'));
 
-// Scegli qui lo zoom iniziale per i due dispositivi:
-var zoomDesktopScelto = 1;  // Ottimale per PC
-var zoomMobileScelto  = 5.0;  // Ottimale per Smartphone
+// REGOLA QUI LO ZOOM: Ora risponderà istantaneamente ai comandi
+var zoomDesktopScelto = 5.5;  // Cambia questo valore (es. 5.0 più lontano, 6.5 più vicino) per testare
+var zoomMobileScelto  = 4.5;  
 
 var isSmallScreen = window.innerWidth < 650;
 var zoomFinale = isSmallScreen ? zoomMobileScelto : zoomDesktopScelto;
@@ -22,9 +20,9 @@ var doHighlight = false;
 var vistaIniziale = new ol.View({
     center: centroMappa,
     zoom: zoomFinale,
-    minZoom: 4.8,                  // Impedisce di fare troppo zoom indietro ed uscire dall'Italia
+    minZoom: 4.0,                  // Lasciamo il minZoom più basso dello zoom iniziale per sbloccarlo
     maxZoom: 28, 
-    extent: confiniBloccatiItalia, // Taglia i bordi della mappa sul rettangolo italiano
+    extent: confiniBloccatiItalia, 
     enableRotation: false
 });
 
@@ -38,11 +36,12 @@ var map = new ol.Map({
     view: vistaIniziale
 });
 
-// Forza la mappa a rimanere ancorata all'estensione se l'utente tenta di trascinarla fuori
+// FUNZIONE DI CONTROLLO DEL CENTRO CORRETTA (Senza bloccare lo zoom di avvio)
 map.getView().on('change:center', function() {
-    var center = map.getView().getCenter();
+    var view = map.getView();
+    var center = view.getCenter();
     if (!ol.extent.containsCoordinate(confiniBloccatiItalia, center)) {
-        map.getView().setCenter(centroMappa); // Se l'utente scappa oltre i confini, la mappa lo rimette al centro
+        view.setCenter(centroMappa); 
     }
 });
 // =========================================================================
