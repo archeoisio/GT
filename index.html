@@ -162,7 +162,6 @@
         .titolo-sezione:hover {
             color: #004499;
         }
-        
         .nodo-regione {
             font-weight: bold;
             background: #f5f5f5;
@@ -171,7 +170,12 @@
             border-radius: 3px;
             display: flex;
             align-items: center;
+            /* --- Ordine elementi interno --- */
         }
+        .nodo-regione .freccia-albero { order: 1; }
+        .nodo-regione .lbl-filtro     { order: 2; flex-grow: 1; }
+        .nodo-regione .chk-filtro     { order: 3; margin-left: auto; margin-right: 0; }
+
         .nodo-provincia {
             font-weight: normal;
             margin-left: 15px;
@@ -179,7 +183,12 @@
             display: flex;
             align-items: center;
             color: #555;
+            /* --- Ordine elementi interno --- */
         }
+        .nodo-provincia .freccia-albero { order: 1; }
+        .nodo-provincia .lbl-filtro     { order: 2; flex-grow: 1; }
+        .nodo-provincia .chk-filtro     { order: 3; margin-left: auto; margin-right: 0; }
+
         .nodo-punto {
             font-weight: normal;
             margin-left: 15px;
@@ -191,13 +200,22 @@
             color: #666;
             border-bottom: 1px dashed #eee;
         }
+        /* --- Forza il checkbox del punto ad andare a destra --- */
+        .lbl-contenitore-punto {
+            display: flex !important;
+            align-items: center;
+            width: 100%;
+            max-width: 100% !important;
+        }
+        .lbl-contenitore-punto .lbl-filtro { order: 1; flex-grow: 1; }
+        .lbl-contenitore-punto .chk-filtro { order: 2; margin-left: auto; margin-right: 0; }
         
         .freccia-albero {
             display: inline-block;
-            width: 12px;
+            width: 18px;
             cursor: pointer;
             font-family: monospace;
-            font-size: 11px;
+            font-size: 16px;
             color: #777;
             user-select: none;
             margin-right: 2px;
