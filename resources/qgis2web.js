@@ -12,7 +12,7 @@ var confiniGradiAmpio = [-35.0, 20.0, 45.0, 70.0];
 var confiniBloccatiMappa = ol.extent.applyTransform(confiniGradiAmpio, ol.proj.getTransform('EPSG:4326', 'EPSG:3857'));
 
 // REGOLA QUI LO ZOOM: Più il numero è basso, più la mappa è lontana
-var zoomDesktopScelto = 2.5;  // Zoom molto lontano per PC (Inquadra l'Italia al centro dell'area)
+var zoomDesktopScelto = 4;  // Zoom molto lontano per PC (Inquadra l'Italia al centro dell'area)
 var zoomMobileScelto  = 2.0;  // Zoom ancora più lontano per smartphone
 
 var isSmallScreen = window.innerWidth < 650;
