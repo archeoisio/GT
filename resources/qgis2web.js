@@ -1,19 +1,16 @@
 // =========================================================================
-// 1. CONFIGURAZIONE DELLA VISTA E ZOOM (RETTANGOLO AMPIO EUROPA-MEDITERRANEO)
+// 1. CONFIGURAZIONE DELLA VISTA E ZOOM (PULITA - SENZA ALCUN FIT)
 // =========================================================================
-// Centro perfetto sull'Italia (Calibrato sulla Toscana)
+// Il centro geometrico dove si posizionerà la mappa all'avvio
 var centroMappa = ol.proj.fromLonLat([12.5000, 42.5000]); 
 
-// Rettangolo IMMENSO (comprende Islanda, Russia, Nord Africa e Atlantico)
-// Questo permette a OpenLayers di usare zoom bassissimi (2 o 3) senza bloccarsi.
+// Rettangolo di movimento (Europa/Mediterraneo) per dare spazio allo zoom
 var confiniGradiAmpio = [-35.0, 20.0, 45.0, 70.0];
-
-// Convertiamo l'extent nel sistema metrico EPSG:3857 della mappa
 var confiniBloccatiMappa = ol.extent.applyTransform(confiniGradiAmpio, ol.proj.getTransform('EPSG:4326', 'EPSG:3857'));
 
-// REGOLA QUI LO ZOOM: Più il numero è basso, più la mappa è lontana
-var zoomDesktopScelto = 4;  // Zoom molto lontano per PC (Inquadra l'Italia al centro dell'area)
-var zoomMobileScelto  = 2.0;  // Zoom ancora più lontano per smartphone
+// 🌍 MODIFICA QUESTI DUE VALORI PER REGOLARE LO ZOOM COME VUOI
+var zoomDesktopScelto = 5.0;  // Abbassa a 4.0 o 3.0 se vuoi vedere più territorio intorno
+var zoomMobileScelto  = 4.0;  
 
 var isSmallScreen = window.innerWidth < 650;
 var zoomFinale = isSmallScreen ? zoomMobileScelto : zoomDesktopScelto;
@@ -24,14 +21,14 @@ var doHighlight = false;
 var vistaIniziale = new ol.View({
     center: centroMappa,
     zoom: zoomFinale,
-    minZoom: 1.5,                  // Permette di allontanarsi un altro po' se serve
+    minZoom: 1.5, // Ti permette di fare tutto lo zoom indietro che vuoi                 
     maxZoom: 28, 
-    extent: confiniBloccatiMappa,  // Il grande recinto che evita il blocco dello zoom
+    extent: confiniBloccatiMappa,  
     enableRotation: false
 });
 
 // =========================================================================
-// 2. INIZIALIZZAZIONE MAPPA E RIPRISTINO FORZATO VISTA
+// 2. INIZIALIZZAZIONE MAPPA PULITA
 // =========================================================================
 var map = new ol.Map({
     target: 'map',
@@ -40,35 +37,11 @@ var map = new ol.Map({
     view: vistaIniziale
 });
 
-// Forzatura post-rendering: obbliga la mappa a centrarsi sull'Italia allo zoom scelto
-map.once('postrender', function() {
-    var view = map.getView();
-    view.setCenter(centroMappa);
-    view.setZoom(zoomFinale);
-});
-
-// Vincolo di movimento: evita che l'utente si perda nell'oceano
+// Controllo dei confini: impedisce solo di trascinare la mappa nel vuoto grigio
 map.getView().on('change:center', function() {
     var view = map.getView();
     var center = view.getCenter();
     if (!ol.extent.containsCoordinate(confiniBloccatiMappa, center)) {
-        view.setCenter(centroMappa); 
-    }
-});
-// Forzatura atomica post-rendering: sovrascrive i calcoli automatici dei layer vettoriali di QGIS
-map.once('postrender', function() {
-    var view = map.getView();
-    view.setCenter(centroMappa);
-    view.setZoom(zoomFinale);
-    // Riapplica il vincolo di minZoom per sicurezza dopo la forzatura
-    view.setMinZoom(zoomFinale); 
-});
-
-// Vincolo di movimento: centra l'utente se tenta di trascinare la mappa fuori dal rettangolo italiano
-map.getView().on('change:center', function() {
-    var view = map.getView();
-    var center = view.getCenter();
-    if (!ol.extent.containsCoordinate(confiniBloccatiItalia, center)) {
         view.setCenter(centroMappa); 
     }
 });
