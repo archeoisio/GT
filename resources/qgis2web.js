@@ -6,7 +6,7 @@ var centroMappa = [1400000.000000, 5200000.000000];
 
 // Scegli qui lo zoom iniziale libero per i due dispositivi:
 var zoomDesktopScelto = 5.8;  // Valore ottimale per PC
-var zoomMobileScelto  = 6;  // Valore ottimale per Smartphone/Tablet
+var zoomMobileScelto  = 5.8;  // Valore ottimale per Smartphone/Tablet
 
 var isSmallScreen = window.innerWidth < 650;
 var zoomFinale = isSmallScreen ? zoomMobileScelto : zoomDesktopScelto;
