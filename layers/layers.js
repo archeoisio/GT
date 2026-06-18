@@ -68,41 +68,35 @@ cluster_sitiguidavol2_5 = new ol.source.Cluster({
     distance: 30,
     source: jsonSource_sitiguidavol2_5,
     
-    // 1. Identifichiamo la geometria in modo sicuro
     geometryFunction: function(feature) {
         if (!feature || !feature.getGeometry()) {
             return null;
         }
-        
-        // Se l'utente zooma molto vicino, restituiamo la geometria normale disattivando l'effetto cluster
-        if (typeof map !== 'undefined' && map.getView().getZoom() > 9) {
-            return feature.getGeometry();
-        }
-        
         return feature.getGeometry();
     },
     
-    // 2. Raggruppiamo i punti in cluster separati rigorosamente per Regione
     createCluster: function(features) {
+        // Se non ci sono feature, usiamo il comportamento standard nativo di OpenLayers (NIENTE crash!)
         if (!features || features.length === 0) {
-            return null; 
+            return ol.source.Cluster.prototype.createCluster.call(this, features);
         }
         
-        // Sicurezza se la prima feature non ha ancora i dati pronti
-        if (!features[0] || typeof features[0].get !== 'function') {
-            return null;
+        // Prendiamo la regione di riferimento dal primo punto del gruppo
+        var primoPunto = features[0];
+        if (!primoPunto || typeof primoPunto.get !== 'function') {
+            return ol.source.Cluster.prototype.createCluster.call(this, features);
         }
         
-        var regioneTarget = features[0].get('Regione');
-        if (!regioneTarget) return null;
+        var regioneTarget = primoPunto.get('Regione');
         
         // Teniamo solo i punti che appartengono alla STESSA regione
         var featuresFiltrate = features.filter(function(f) {
             return f && typeof f.get === 'function' && f.get('Regione') === regioneTarget;
         });
         
+        // Se il filtro svuota tutto, passiamo l'array vuoto al gestore nativo
         if (featuresFiltrate.length === 0) {
-            return null;
+            return ol.source.Cluster.prototype.createCluster.call(this, featuresFiltrate);
         }
         
         // Calcoliamo il centro geometrico (coordinate medie)
@@ -114,7 +108,7 @@ cluster_sitiguidavol2_5 = new ol.source.Cluster({
         });
         var centroCluster = [x / featuresFiltrate.length, y / featuresFiltrate.length];
         
-        // Generiamo il cluster finale
+        // Generiamo il cluster finale come richiesto da OpenLayers
         return new ol.Feature({
             geometry: new ol.geom.Point(centroCluster),
             features: featuresFiltrate
