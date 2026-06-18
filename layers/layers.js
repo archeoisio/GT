@@ -94,7 +94,7 @@ cluster_sitiguidavol2_5 = new ol.source.Cluster({
         
         // Teniamo solo i punti che appartengono alla STESSA regione
         var featuresFiltrate = features.filter(function(f) {
-            return f && f.get('Regione') === regionTarget;
+            return f && f.get('Regione') === regioneTarget;
         });
         
         // Se il filtro svuota tutto, restituiamo una feature vuota per evitare il crash di 'ol_uid'
