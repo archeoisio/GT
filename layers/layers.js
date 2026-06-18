@@ -75,34 +75,45 @@ cluster_sitiguidavol2_5 = new ol.source.Cluster({
         return feature.getGeometry();
     },
     
-    createCluster: function(features) {
-        // Se non ci sono feature valide, delega al comportamento nativo sicuro
-        if (!features || features.length === 0 || !features[0] || typeof features[0].get !== 'function') {
-            return ol.source.Cluster.prototype.createCluster.call(this, features);
+    // CORRETTO: Adesso riceve sia la geometria nativa (point) che l'array di elementi (features)
+    createCluster: function(point, features) {
+        if (!features || features.length === 0) {
+            return new ol.Feature({
+                geometry: point,
+                features: []
+            });
         }
         
-        var regioneTarget = features[0].get('Regione');
-        if (!regioneTarget) {
-            return ol.source.Cluster.prototype.createCluster.call(this, features);
+        // Prendiamo la regione del primo elemento valido del gruppo
+        var primoPunto = features[0];
+        if (!primoPunto || typeof primoPunto.get !== 'function') {
+            return new ol.Feature({
+                geometry: point,
+                features: features
+            });
         }
         
-        // Filtra i punti tenendo solo quelli della stessa regione
+        var regioneTarget = primoPunto.get('Regione');
+        
+        // Filtriamo le feature mantenendo solo quelle della stessa regione
         var featuresFiltrate = features.filter(function(f) {
             return f && typeof f.get === 'function' && f.get('Regione') === regioneTarget;
         });
         
         if (featuresFiltrate.length === 0) {
-            return ol.source.Cluster.prototype.createCluster.call(this, featuresFiltrate);
+            return new ol.Feature({
+                geometry: point,
+                features: []
+            });
         }
         
-        // Calcolo del centro geometrico con CONTROLLO DI SICUREZZA RIGIDO SULLE COORDINATE
+        // Ricalcoliamo il centro basandoci esclusivamente sui punti filtrati della stessa regione
         var x = 0, y = 0;
         var puntiValidi = 0;
         
         featuresFiltrate.forEach(function(f) {
             if (f && f.getGeometry() && typeof f.getGeometry().getCoordinates === 'function') {
                 var coord = f.getGeometry().getCoordinates();
-                // Controllo fondamentale: verifica che coord esista e abbia una coordinata X e Y valida
                 if (coord && Array.isArray(coord) && coord.length >= 2) {
                     x += coord[0];
                     y += coord[1];
@@ -111,6 +122,15 @@ cluster_sitiguidavol2_5 = new ol.source.Cluster({
             }
         });
         
+        var centroCluster = puntiValidi > 0 ? [x / puntiValidi, y / puntiValidi] : point.getCoordinates();
+        
+        // Restituiamo la feature finale strutturata esattamente come vuole OpenLayers
+        return new ol.Feature({
+            geometry: new ol.geom.Point(centroCluster),
+            features: featuresFiltrate
+        });
+    }
+});        
         // Se nessun punto aveva coordinate valide, usa il fallback nativo per non rompere il rendering
         if (puntiValidi === 0) {
             return ol.source.Cluster.prototype.createCluster.call(this, featuresFiltrate);
