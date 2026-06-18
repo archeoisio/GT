@@ -18,7 +18,7 @@ var map = new ol.Map({
 // =========================================================================
 // Modifica questi due valori per regolare lo zoom iniziale:
 // Più il numero è basso, più la mappa sarà lontana (dezoomata).
-var zoomDesktopScelto = 4;  // Zoom per computer (es. 5.5, 5.8, 6.0)
+var zoomDesktopScelto = 1;  // Zoom per computer (es. 5.5, 5.8, 6.0)
 var zoomMobileScelto  = 4.8;  // Zoom per smartphone/tablet (più basso del desktop)
 
 // Verifichiamo se lo schermo è piccolo (Mobile) usando il controllo nativo del file o la larghezza
