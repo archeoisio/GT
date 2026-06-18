@@ -1,5 +1,5 @@
 // =========================================================================
-// 1. CONFIGURAZIONE DELLA VISTA E ZOOM SELEZIONABILI
+// 1. CONFIGURAZIONE DELLA VISTA E ZOOM SELEZIONABILI (CORRETTA)
 // =========================================================================
 // Coordinate del centro mappa (Centro Italia in EPSG:3857)
 var centroMappa = [1400000.000000, 5200000.000000]; 
@@ -15,16 +15,17 @@ var zoomFinale = isSmallScreen ? zoomMobileScelto : zoomDesktopScelto;
 var doHover = false;     
 var doHighlight = false;  
 
+// Creiamo la vista con una leggera tolleranza sul minZoom per permettere il calcolo dell'extent
 var vistaIniziale = new ol.View({
     center: centroMappa,
     zoom: zoomFinale,
-    minZoom: zoomFinale, // Blocca il dezoom massimo al valore iniziale scelto
+    minZoom: zoomFinale - 0.5, // Tolleranza iniziale antirottura
     maxZoom: 28, 
     enableRotation: false
 });
 
 // =========================================================================
-// 2. INIZIALIZZAZIONE MAPPA E APPLICAZIONE LIMITI (EXTENT)
+// 2. INIZIALIZZAZIONE MAPPA E APPLICAZIONE LIMITI DINAMICI
 // =========================================================================
 var map = new ol.Map({
     target: 'map',
@@ -33,12 +34,18 @@ var map = new ol.Map({
     view: vistaIniziale
 });
 
-// Calcoliamo e impostiamo i confini invalicabili basandoci sulla visualizzazione iniziale reale
-map.once('rendercomplete', function() {
+// Applichiamo i limiti basati sullo schermo corrente appena la mappa viene renderizzata
+map.once('postrender', function() {
+    var view = map.getView();
     var size = map.getSize();
     if (size) {
-        var extentIniziale = vistaIniziale.calculateExtent(size);
-        vistaIniziale.set('extent', extentIniziale);
+        // Calcola l'area visibile esatta all'avvio
+        var extentIniziale = view.calculateExtent(size);
+        // Applica l'extent e ripristina il blocco rigido dello zoom indietro
+        view.setProperties({
+            'extent': extentIniziale,
+            'minZoom': zoomFinale
+        });
     }
 });
 
