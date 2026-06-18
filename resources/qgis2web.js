@@ -114,7 +114,8 @@ var topRightContainerDiv = document.getElementById('top-right-container');
 var bottomRightContainerDiv = document.getElementById('bottom-right-container');
 
 // =========================================================================
-// 5. CONFIGURAZIONE POPUP E LOGICA CAMPI
+// =========================================================================
+// 5. CONFIGURAZIONE POPUP E LOGICA CAMPI (AGGIORNATO CON POSIZIONAMENTO AUTOMATICO)
 // =========================================================================
 var container = document.getElementById('popup');
 var content = document.getElementById('popup-content');
@@ -136,9 +137,16 @@ closer.onclick = function() {
     return false;
 };
 
+// 💡 SOSTITUITO QUI: Configurazione per calcolare la posizione ottimale
 var overlayPopup = new ol.Overlay({
     element: container,
-    autoPan: true
+    autoPan: true,
+    autoPanAnimation: {
+        duration: 250 // Spostamento fluido
+    },
+    autoPanMargin: 30,         // Lascia 30px di margine dai bordi per non toccare i limiti
+    positioning: 'top-center', // Ancoraggio invertito: apre il popup VERSO IL BASSO rispetto al punto cliccato
+    offset: [0, 15]            // Distanza di sicurezza dal marker per non coprirlo
 });
 map.addOverlay(overlayPopup);
 
@@ -192,7 +200,6 @@ function createPopupField(currentFeature, currentFeatureKeys, layer) {
     }
     return popupText;
 }
-
 // =========================================================================
 // 6. HIGHLIGHT (POINTERMOVE SENZA POPUP AUTOMATICO)
 // =========================================================================
