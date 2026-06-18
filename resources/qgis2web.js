@@ -20,7 +20,7 @@ var doHighlight = false;
 var vistaIniziale = new ol.View({
     center: centroMappa,
     zoom: zoomFinale,
-    minZoom: Math.min(2, zoomFinale), // Il minimo si adatta dinamicamente per non bloccare lo zoom scelto
+    minZoom: 1,
     maxZoom: 28, 
     extent: confiniBloccatiItalia, 
     enableRotation: false
