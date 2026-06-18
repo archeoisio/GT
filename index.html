@@ -79,23 +79,30 @@
             background-color: rgba(248, 248, 248, 0.7);
         }
 
-        .pannello-features {
-            position: absolute; 
-            top: 200px;
-            right: 10px; 
-            z-index: 99998; /* Posizionato un livello sotto la legenda per evitare conflitti visivi */
-            background: white; 
-            padding: 12px; 
-            border-radius: 6px; 
-            max-height: calc(100vh - 240px); 
-            overflow-y: auto; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.25); 
-            width: 280px; 
-            font-family: 'Open Sans', sans-serif; 
-            font-size: 13px;
-            color: #333;
-            transition: max-height 0.3s ease, width 0.3s ease, padding 0.3s ease;
-        }
+        pannello-features {
+    position: absolute; 
+    top: 200px;
+    right: 10px; 
+    z-index: 99998; 
+    background: white; 
+    padding: 12px; 
+    border-radius: 6px; 
+    
+    /* MODIFICATO: Usa 100dvh invece di 100vh per calcolare al millimetro l'altezza reale su mobile */
+    max-height: calc(100dvh - 240px); 
+    
+    overflow-y: auto; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.25); 
+    
+    /* MODIFICATO: Mantiene i 280px su desktop ma impedisce al pannello di uscire dagli schermi mobile stretti */
+    width: 280px; 
+    max-width: 90vw; 
+    
+    font-family: 'Open Sans', sans-serif; 
+    font-size: 13px;
+    color: #333;
+    transition: max-height 0.3s ease, width 0.3s ease, padding 0.3s ease;
+}
         .pannello-header {
             display: flex;
             justify-content: space-between;
