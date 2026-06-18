@@ -185,8 +185,8 @@ wms_layers.push([lyr_IdrografiaReticoloidrografico_6, 1]);
 // Visibilità (Impostato su true/false)
 lyr_XYZLayer_0.setVisible(true);
 lyr_Satellite_0.setVisible(false);
-lyr_regioni_1.setVisible(true);
-lyr_unitaterritorialisovracomunali_2.setVisible(true);
+lyr_regioni_1.setVisible(false);
+lyr_unitaterritorialisovracomunali_2.setVisible(false);
 lyr_museiguidavol2_4.setVisible(true);
 lyr_sitiguidavol2_5.setVisible(true);
 lyr_sititecnicopratica.setVisible(true); 
