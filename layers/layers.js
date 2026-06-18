@@ -132,22 +132,66 @@ lyr_unitaterritorialisovracomunali_2.set('fieldAliases', {'fid': 'fid', 'pkuid':
 lyr_museiguidavol2_4.set('fieldAliases', {'id_Reg': 'id_Reg', 'Regione': 'Regione', 'ID museoxr': 'ID museoxr', 'Museo': 'Museo', 'Comune': 'Comune', 'Sezione': 'Sezione', 'Lat': 'Lat', 'Long': 'Long', 'Provincia': 'Provincia', });
 lyr_sitiguidavol2_5.set('fieldAliases', {'ID_Reg': 'ID_Reg', 'Regione': 'Regione', 'ID_sitoxre': 'ID_sitoxre', 'ID_sitotot': 'ID_sitotot', 'Sito/Museo': 'Sito/Museo', 'Comune/Loc': 'Comune/Loc', 'Provincia': 'Provincia', 'Sezione': 'Sezione', 'Lat': 'Lat', 'Long': 'Long', 'LINK': 'LINK', 'LINK 2': 'LINK 2', 'LINK 3': 'LINK 3', 'LINK 4': 'LINK 4', });
 
-// Se conosci i campi/attributi del nuovo layer, puoi mapparli qui sotto (es. 'ID': 'ID', 'Nome': 'Nome', ecc.)
-lyr_sititecnicopratica.set('fieldAliases', {}); 
+lyr_sititecnicopratica.set('fieldAliases', {
+    'ID_Reg': 'ID Regione', 
+    'Regione': 'Regione', 
+    'ID_sitoxre': 'ID Sito Xre', 
+    'ID_sitotot': 'ID Sito Tot', 
+    'Sito/Museo': 'Sito/Museo', 
+    'Comune/Loc': 'Comune/Loc', 
+    'Provincia': 'Provincia', 
+    'Sezione': 'Sezione', 
+    'Lat': 'Lat', 
+    'Long': 'Long', 
+    'LINK': 'LINK', 
+    'LINK 2': 'LINK 2', 
+    'LINK 3': 'LINK 3', 
+    'LINK 4': 'LINK 4'
+});
 
 lyr_regioni_1.set('fieldImages', {'fid': 'TextEdit', 'pkuid': 'TextEdit', 'cod_rip': 'TextEdit', 'cod_reg': 'TextEdit', 'den_reg': 'TextEdit', 'shape_leng': 'TextEdit', 'shape_area': 'TextEdit', 'den_rip': 'TextEdit', 'ontopia': 'TextEdit', });
 lyr_unitaterritorialisovracomunali_2.set('fieldImages', {'fid': 'TextEdit', 'pkuid': 'TextEdit', 'cod_rip': 'TextEdit', 'cod_reg': 'TextEdit', 'cod_prov': 'TextEdit', 'cod_cm': 'TextEdit', 'cod_uts': 'TextEdit', 'den_prov': 'TextEdit', 'den_cm': 'TextEdit', 'den_uts': 'TextEdit', 'sigla': 'TextEdit', 'tipo_uts': 'TextEdit', 'shape_leng': 'TextEdit', 'shape_area': 'TextEdit', 'den_reg': 'TextEdit', 'den_rip': 'TextEdit', 'ontopia': 'TextEdit', });
 lyr_museiguidavol2_4.set('fieldImages', {'id_Reg': 'Range', 'Regione': 'TextEdit', 'ID museoxr': 'TextEdit', 'Museo': 'TextEdit', 'Comune': 'TextEdit', 'Sezione': 'TextEdit', 'Lat': 'TextEdit', 'Long': 'TextEdit', 'Provincia': 'TextEdit', });
 lyr_sitiguidavol2_5.set('fieldImages', {'ID_Reg': 'Range', 'Regione': 'TextEdit', 'ID_sitoxre': 'TextEdit', 'ID_sitotot': 'TextEdit', 'Sito/Museo': 'TextEdit', 'Comune/Loc': 'TextEdit', 'Provincia': 'TextEdit', 'Sezione': 'TextEdit', 'Lat': 'TextEdit', 'Long': 'TextEdit', 'LINK': '', 'LINK 2': '', 'LINK 3': '', 'LINK 4': '', });
 
-lyr_sititecnicopratica.set('fieldImages', {});
+lyr_sititecnicopratica.set('fieldImages', {
+    'ID_Reg': 'Range', 
+    'Regione': 'TextEdit', 
+    'ID_sitoxre': 'TextEdit', 
+    'ID_sitotot': 'TextEdit', 
+    'Sito/Museo': 'TextEdit', 
+    'Comune/Loc': 'TextEdit', 
+    'Provincia': 'TextEdit', 
+    'Sezione': 'TextEdit', 
+    'Lat': 'TextEdit', 
+    'Long': 'TextEdit', 
+    'LINK': 'TextEdit', 
+    'LINK 2': 'TextEdit', 
+    'LINK 3': 'TextEdit', 
+    'LINK 4': 'TextEdit'
+});
 
 lyr_regioni_1.set('fieldLabels', {'fid': 'hidden field', 'pkuid': 'hidden field', 'cod_rip': 'hidden field', 'cod_reg': 'hidden field', 'den_reg': 'inline label - visible with data', 'shape_leng': 'hidden field', 'shape_area': 'hidden field', 'den_rip': 'hidden field', 'ontopia': 'hidden field', });
 lyr_unitaterritorialisovracomunali_2.set('fieldLabels', {'fid': 'hidden field', 'pkuid': 'hidden field', 'cod_rip': 'hidden field', 'cod_reg': 'hidden field', 'cod_prov': 'hidden field', 'cod_cm': 'hidden field', 'cod_uts': 'hidden field', 'den_prov': 'hidden field', 'den_cm': 'hidden field', 'den_uts': 'inline label - visible with data', 'sigla': 'hidden field', 'tipo_uts': 'hidden field', 'shape_leng': 'hidden field', 'shape_area': 'hidden field', 'den_reg': 'inline label - visible with data', 'den_rip': 'hidden field', 'ontopia': 'hidden field', });
 lyr_museiguidavol2_4.set('fieldLabels', {'id_Reg': 'hidden field', 'Regione': 'inline label - visible with data', 'ID museoxr': 'hidden field', 'Museo': 'inline label - visible with data', 'Comune': 'inline label - visible with data', 'Provincia': 'inline label - visible with data','Sezione': 'inline label - visible with data', 'Lat': 'hidden field', 'Long': 'hidden field', });
 lyr_sitiguidavol2_5.set('fieldLabels', {'ID_Reg': 'hidden field', 'Regione': 'inline label - visible with data', 'ID_sitoxre': 'hidden field', 'ID_sitotot': 'hidden field', 'Sito/Museo': 'inline label - visible with data', 'Comune/Loc': 'inline label - visible with data', 'Provincia': 'inline label - visible with data', 'Sezione': 'hidden field', 'Lat': 'hidden field', 'Long': 'hidden field', 'LINK': 'inline label - visible with data', 'LINK 2': 'inline label - visible with data', 'LINK 3': 'inline label - visible with data', 'LINK 4': 'inline label - visible with data', });
 
-lyr_sititecnicopratica.set('fieldLabels', {});
+lyr_sititecnicopratica.set('fieldLabels', {
+    'ID_Reg': 'hidden field', 
+    'Regione': 'inline label - visible with data', 
+    'ID_sitoxre': 'hidden field', 
+    'ID_sitotot': 'hidden field', 
+    'Sito/Museo': 'inline label - visible with data', 
+    'Comune/Loc': 'inline label - visible with data', 
+    'Provincia': 'inline label - visible with data', 
+    'Sezione': 'hidden field', 
+    'Lat': 'hidden field', 
+    'Long': 'hidden field', 
+    'LINK': 'inline label - visible with data', 
+    'LINK 2': 'inline label - visible with data', 
+    'LINK 3': 'inline label - visible with data', 
+    'LINK 4': 'inline label - visible with data'
+});
 
 lyr_sitiguidavol2_5.on('precompose', function(evt) {
     evt.context.globalCompositeOperation = 'normal';
