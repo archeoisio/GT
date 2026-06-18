@@ -15,7 +15,6 @@ var lyr_Satellite_0 = new ol.layer.Tile({
         url: 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}' // Satellite con etichette stradali
     })
 });
-
 var format_regioni_1 = new ol.format.GeoJSON();
 var features_regioni_1 = format_regioni_1.readFeatures(json_regioni_1, 
     {dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857'});
@@ -191,7 +190,7 @@ lyr_sitiguidavol2_5.setVisible(true);
 lyr_sititecnicopratica.setVisible(true); 
 lyr_IdrografiaReticoloidrografico_6.setVisible(false);
 
-var layersList = [lyr_XYZLayer_0, lyr_regioni_1, lyr_unitaterritorialisovracomunali_2, lyr_museiguidavol2_4, lyr_sitiguidavol2_5, lyr_sititecnicopratica, lyr_IdrografiaReticoloidrografico_6];
+layersList = [lyr_XYZLayer_0, lyr_regioni_1, lyr_unitaterritorialisovracomunali_2, lyr_museiguidavol2_4, lyr_sitiguidavol2_5, lyr_sititecnicopratica, lyr_IdrografiaReticoloidrografico_6];
 
 lyr_regioni_1.set('fieldAliases', {'fid': 'fid', 'pkuid': 'pkuid', 'cod_rip': 'cod_rip', 'cod_reg': 'cod_reg', 'den_reg': 'den_reg', 'shape_leng': 'shape_leng', 'shape_area': 'shape_area', 'den_rip': 'den_rip', 'ontopia': 'ontopia', });
 lyr_unitaterritorialisovracomunali_2.set('fieldAliases', {'fid': 'fid', 'pkuid': 'pkuid', 'cod_rip': 'cod_rip', 'cod_reg': 'cod_reg', 'cod_prov': 'cod_prov', 'cod_cm': 'cod_cm', 'cod_uts': 'cod_uts', 'den_prov': 'den_prov', 'den_cm': 'den_cm', 'den_uts': 'den_uts', 'sigla': 'sigla', 'tipo_uts': 'tipo_uts', 'shape_leng': 'shape_leng', 'shape_area': 'shape_area', 'den_reg': 'den_reg', 'den_rip': 'den_rip', 'ontopia': 'ontopia', });
