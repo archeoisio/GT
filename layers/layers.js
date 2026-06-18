@@ -79,7 +79,7 @@ var lyr_sitiguidavol2_5 = new ol.layer.Vector({
 
 // --- NUOVO LAYER: sititecnicopratica ---
 var format_sititecnicopratica = new ol.format.GeoJSON();
-var features_sititecnicopratica = format_sititecnicopratica.readFeatures(json_sititecnicopratica, 
+var features_sititecnicopratica = format_sititecnicopratica.readFeatures(json_tecnicopratica_5, // <-- CORRETTO
     {dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857'});
 var jsonSource_sititecnicopratica = new ol.source.Vector({
     attributions: ' ',
