@@ -9,8 +9,8 @@ var map = new ol.Map({
 
 // Vista iniziale allontanata - Modificato padding per vedere tutta l'Italia con più margine
 map.getView().fit(
-    [386170.751050, 4404182.278216, 3526858.333407, 5776271.948619], 
-    { size: map.getSize(), padding: [60, 60, 60, 60] }
+    [650000.000000, 4240000.000000, 2200000.000000, 5950000.000000], 
+    { size: map.getSize(), padding: [50, 80, 50, 80] }
 );
 
 // full zooms only
