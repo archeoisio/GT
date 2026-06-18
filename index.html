@@ -524,6 +524,38 @@ document.getElementById('btn-reset-view').addEventListener('click', function(e) 
                     chkReg.id = idRegione;
                     chkReg.checked = true;
                     
+                    // --- EVENTO: Cliccando sulla Regione accendi/spegni tutto sotto ---
+                    chkReg.addEventListener('change', function() {
+                        var statoSpunta = this.checked;
+                        var subProvince = divProvContenitore.querySelectorAll('.nodo-provincia input');
+                        var subPunti = divProvContenitore.querySelectorAll('.chk-singolo-punto');
+                        
+                        // Disattiva momentaneamente gli indeterminate
+                        this.indeterminate = false;
+
+                        subPunti.forEach(function(p) {
+                            if (p.checked !== statoSpunta) {
+                                p.checked = statoSpunta;
+                                // Aggiorna l'array dei disattivati simulando il change interno
+                                var nomePunto = p.dataset.nome;
+                                var dis = datiLivelli[tipo].disattivate;
+                                if (!statoSpunta) {
+                                    if (dis.indexOf(nomePunto) === -1) dis.push(nomePunto);
+                                } else {
+                                    var index = dis.indexOf(nomePunto);
+                                    if (index > -1) dis.splice(index, 1);
+                                }
+                            }
+                        });
+
+                        subProvince.forEach(function(pr) {
+                            pr.checked = statoSpunta;
+                            pr.indeterminate = false;
+                        });
+
+                        aggiornaConteggiEFiltraggio();
+                    });
+                    
                     var lblReg = document.createElement('label');
                     lblReg.className = 'lbl-filtro';
                     lblReg.htmlFor = idRegione;
@@ -563,6 +595,31 @@ document.getElementById('btn-reset-view').addEventListener('click', function(e) 
                         chkProv.className = 'chk-filtro';
                         chkProv.id = idProvincia;
                         chkProv.checked = true;
+
+                        // --- EVENTO: Cliccando sulla Provincia accendi/spegni i suoi punti ---
+                        chkProv.addEventListener('change', function() {
+                            var statoSpunta = this.checked;
+                            var subPunti = divPuntiContenitore.querySelectorAll('.chk-singolo-punto');
+                            
+                            this.indeterminate = false;
+
+                            subPunti.forEach(function(p) {
+                                if (p.checked !== statoSpunta) {
+                                    p.checked = statoSpunta;
+                                    var nomePunto = p.dataset.nome;
+                                    var dis = datiLivelli[tipo].disattivate;
+                                    if (!statoSpunta) {
+                                        if (dis.indexOf(nomePunto) === -1) dis.push(nomePunto);
+                                    } else {
+                                        var index = dis.indexOf(nomePunto);
+                                        if (index > -1) dis.splice(index, 1);
+                                    }
+                                }
+                            });
+
+                            aggiornaStatoCheckboxPadri(chkReg, divProvContenitore);
+                            aggiornaConteggiEFiltraggio();
+                        });
                         
                         var lblProv = document.createElement('label');
                         lblProv.className = 'lbl-filtro';
@@ -617,7 +674,7 @@ document.getElementById('btn-reset-view').addEventListener('click', function(e) 
                             divPto.appendChild(lblContenitore);
 
                             var divAzioni = document.createElement('div');
-                            divAzioni.className = 'contenitore-azioni-punto';
+                            divAzioni.className = 'contenitore-actions-punto';
                             divAzioni.style.display = 'flex';
                             divAzioni.style.alignItems = 'center';
                             divAzioni.style.gap = '4px';
@@ -696,7 +753,6 @@ document.getElementById('btn-reset-view').addEventListener('click', function(e) 
                     aggiornaStatoCheckboxPadri(chkReg, divProvContenitore);
                 });
             }
-
             function aggiornaStatoCheckboxPadri(chkPadre, contenitoreFigli) {
                 var totali = contenitoreFigli.querySelectorAll('.chk-filtro');
                 var accesi = contenitoreFigli.querySelectorAll('.chk-filtro:checked');
