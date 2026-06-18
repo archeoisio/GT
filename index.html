@@ -33,13 +33,26 @@
             background-color: rgba(255,255,255,.4) !important;
             padding: 2px !important;
         } 
-        /* Ripristinati i controlli nativi dello zoom nella loro posizione standard a sinistra */
+        
+        /* === ALLINEAMENTO PERFETTO CONTROLLI A SINISTRA === */
+        /* Posiziona lo zoom nativo */
         .ol-zoom {
             top: 15px !important;
             left: 10px !important;
+            margin-bottom: 5px !important;
         }
+        /* Riposiziona il cerca nativo di qgis2web (Geocoder Photon) esattamente sotto lo zoom */
+        .gcd-gl-control {
+            top: 85px !important; /* Calcolato per stare millimetricamente sotto i tasti + e - */
+            left: 10px !important;
+        }
+        
         .ol-attribution {
             max-width: calc(100% - 320px) !important;
+        }
+        /* Assicuriamo che il pannello dei layer nativo di QGIS2Web stia SOPRA al nostro pannello */
+        .layer-switcher {
+            z-index: 1005 !important;
         }
         </style>
 
@@ -53,9 +66,9 @@
         /* Stili per il pannello di controllo filtri SPOSTATO A DESTRA SOTTO LA LEGENDA */
         .pannello-features {
             position: absolute; 
-            top: 50px; /* Lascia lo spazio in alto per il toggle della legenda nativa */
-            right: 10px; /* Posizionato sul lato destro */
-            z-index: 1000; 
+            top: 50px; /* Spazio in alto per il toggle della legenda nativa */
+            right: 10px; 
+            z-index: 999; /* Leggermente inferiore a 1005 per permettere alla legenda di coprirlo */
             background: white; 
             padding: 12px; 
             border-radius: 6px; 
@@ -106,6 +119,8 @@
         .pannello-features.ridotto .pannello-corpo {
             display: none !important;
         }
+        
+        /* Titolo sezione ora interattivo e cliccabile */
         .titolo-sezione {
             margin-top: 10px;
             margin-bottom: 6px;
@@ -114,6 +129,13 @@
             font-size: 13px;
             border-bottom: 1px solid #ddd;
             padding-bottom: 2px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .titolo-sezione:hover {
+            color: #004499;
         }
         
         /* Stili per la struttura ad albero collassabile */
@@ -160,12 +182,20 @@
             color: #0066cc;
         }
         
-        /* Contenitori dei figli (nascosti di default) */
+        /* Contenitori dei figli (nascosti di default nell'albero delle regioni) */
         .contenitore-figli {
             display: none; 
         }
         .contenitore-figli.aperto {
             display: block; 
+        }
+        
+        /* Contenitore delle macro-sezioni (nascosto di default) */
+        .contenitore-sezione {
+            display: none;
+        }
+        .contenitore-sezione.apertogruppo {
+            display: block;
         }
 
         .lbl-contenitore-punto {
@@ -219,11 +249,21 @@
                 <button id="btn-toggle-pnl" class="btn-toggle-pannello">—</button>
             </div>
             <div class="pannello-corpo">
-                <div class="titolo-sezione">Siti <span id="cnt-tot-siti" class="badge-conteggio"></span></div>
-                <div id="albero-siti"></div>
+                <div id="titolo-siti" class="titolo-sezione">
+                    <span class="freccia-albero" style="margin-right: 5px;">►</span>
+                    Siti <span id="cnt-tot-siti" class="badge-conteggio"></span>
+                </div>
+                <div id="cont-siti" class="contenitore-sezione">
+                    <div id="albero-siti"></div>
+                </div>
 
-                <div class="titolo-sezione" style="margin-top:15px;">Musei <span id="cnt-tot-musei" class="badge-conteggio"></span></div>
-                <div id="albero-musei"></div>
+                <div id="titolo-musei" class="titolo-sezione" style="margin-top:15px;">
+                    <span class="freccia-albero" style="margin-right: 5px;">►</span>
+                    Musei <span id="cnt-tot-musei" class="badge-conteggio"></span>
+                </div>
+                <div id="cont-musei" class="contenitore-sezione">
+                    <div id="albero-musei"></div>
+                </div>
             </div>
         </div>
 
@@ -257,6 +297,25 @@
                     this.textContent = '❑';
                 }
             });
+
+            // Gestione apertura/chiusura macro-sezioni (Siti / Musei) - Di default chiusi ora
+            function impostaToggleMacroSezione(idTitolo, idContenitore) {
+                document.getElementById(idTitolo).addEventListener('click', function(e) {
+                    if(e.target.classList.contains('badge-conteggio')) return;
+                    
+                    var cont = document.getElementById(idContenitore);
+                    var freccia = this.querySelector('.freccia-albero');
+                    if (cont.classList.contains('apertogruppo')) {
+                        cont.classList.remove('apertogruppo');
+                        freccia.innerHTML = '►';
+                    } else {
+                        cont.classList.add('apertogruppo');
+                        freccia.innerHTML = '▼';
+                    }
+                });
+            }
+            impostaToggleMacroSezione('titolo-siti', 'cont-siti');
+            impostaToggleMacroSezione('titolo-musei', 'cont-musei');
 
             function inizializzaFiltriAvanzati() {
                 if (typeof format_sitiguidavol2_5 !== 'undefined' && typeof json_sitiguidavol2_5 !== 'undefined') {
