@@ -181,17 +181,18 @@ var lyr_IdrografiaReticoloidrografico_6 = new ol.layer.Tile({
 
 wms_layers.push([lyr_IdrografiaReticoloidrografico_6, 1]);
 
+// Visibilità (Impostato su true/false)
 lyr_XYZLayer_0.setVisible(true);
 lyr_Satellite_0.setVisible(false);
-lyr_regioni_1.setVisible(false);
-lyr_unitaterritorialisovracomunali_2.setVisible(false);
+lyr_regioni_1.setVisible(true);
+lyr_unitaterritorialisovracomunali_2.setVisible(true);
 lyr_museiguidavol2_4.setVisible(true);
 lyr_sitiguidavol2_5.setVisible(true);
 lyr_sititecnicopratica.setVisible(true); 
 lyr_IdrografiaReticoloidrografico_6.setVisible(false);
 
-layersList = [lyr_XYZLayer_0, lyr_regioni_1, lyr_unitaterritorialisovracomunali_2, lyr_museiguidavol2_4, lyr_sitiguidavol2_5, lyr_sititecnicopratica, lyr_IdrografiaReticoloidrografico_6];
-
+// Lista dei Layers (SENZA "var" davanti e scritta su una riga pulita)
+layersList = [lyr_XYZLayer_0, lyr_Satellite_0, lyr_regioni_1, lyr_unitaterritorialisovracomunali_2, lyr_museiguidavol2_4, lyr_sitiguidavol2_5, lyr_sititecnicopratica, lyr_IdrografiaReticoloidrografico_6];
 lyr_regioni_1.set('fieldAliases', {'fid': 'fid', 'pkuid': 'pkuid', 'cod_rip': 'cod_rip', 'cod_reg': 'cod_reg', 'den_reg': 'den_reg', 'shape_leng': 'shape_leng', 'shape_area': 'shape_area', 'den_rip': 'den_rip', 'ontopia': 'ontopia', });
 lyr_unitaterritorialisovracomunali_2.set('fieldAliases', {'fid': 'fid', 'pkuid': 'pkuid', 'cod_rip': 'cod_rip', 'cod_reg': 'cod_reg', 'cod_prov': 'cod_prov', 'cod_cm': 'cod_cm', 'cod_uts': 'cod_uts', 'den_prov': 'den_prov', 'den_cm': 'den_cm', 'den_uts': 'den_uts', 'sigla': 'sigla', 'tipo_uts': 'tipo_uts', 'shape_leng': 'shape_leng', 'shape_area': 'shape_area', 'den_reg': 'den_reg', 'den_rip': 'den_rip', 'ontopia': 'ontopia', });
 lyr_museiguidavol2_4.set('fieldAliases', {'id_Reg': 'id_Reg', 'Regione': 'Regione', 'ID museoxr': 'ID museoxr', 'Museo': 'Museo', 'Comune': 'Comune', 'Sezione': 'Sezione', 'Lat': 'Lat', 'Long': 'Long', 'Provincia': 'Provincia', });
