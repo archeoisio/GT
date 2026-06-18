@@ -1,18 +1,28 @@
-// Definiamo i confini invalicabili (Riquadro Italia)
-var confiniMappa = [650000.000000, 4240000.000000, 2200000.000000, 5950000.000000];
+// 1. Definiamo le coordinate del centro (es. Centro Italia in EPSG:3857)
+var centroMappa = [1400000.000000, 5200000.000000]; 
 
+// 2. Impostiamo i valori di zoom desiderati
+var zoomDesktopScelto = 6.0;  // Modifica questo valore per il PC
+var zoomMobileScelto  = 4.8;  // Modifica questo valore per lo Smartphone
+
+// 3. Rileviamo la tipologia di schermo
+var isSmallScreen = window.innerWidth < 650;
+var zoomFinale = isSmallScreen ? zoomMobileScelto : zoomDesktopScelto;
+
+// 4. Inizializzazione della Mappa e della Vista senza vincoli di estensione
 var map = new ol.Map({
     target: 'map',
     renderer: 'canvas',
     layers: layersList,
     view: new ol.View({
-         maxZoom: 28, 
-         minZoom: 1, 
-         enableRotation: false, 
-         extent: confiniMappa   
+        center: centroMappa,
+        zoom: zoomFinale,
+        minZoom: zoomFinale, // Blocca il dezoom massimo al valore iniziale scelto
+        maxZoom: 28, 
+        enableRotation: false
     })
 });
-
+// =========================================================================
 // =========================================================================
 // GESTIONE DEZOOM PERSONALIZZATO (DESKTOP E MOBILE)
 // =========================================================================
