@@ -13,23 +13,27 @@ var map = new ol.Map({
     })
 });
 
-// Vista iniziale allontanata - Sfrutta il padding per dare respiro all'inquadratura
-map.getView().fit(
-    confiniMappa, 
-    { size: map.getSize(), padding: [60, 60, 60, 60] }
-);
+// =========================================================================
+// GESTIONE DEZOOM PERSONALIZZATO (DESKTOP E MOBILE)
+// =========================================================================
+// Modifica questi due valori per regolare lo zoom iniziale:
+// Più il numero è basso, più la mappa sarà lontana (dezoomata).
+var zoomDesktopScelto = 5.8;  // Zoom per computer (es. 5.5, 5.8, 6.0)
+var zoomMobileScelto  = 4.8;  // Zoom per smartphone/tablet (più basso del desktop)
 
-// 1. Recuperiamo lo zoom decimale esatto calcolato sui confini
-var zoomInizialeCalcolato = map.getView().getZoom();
+// Verifichiamo se lo schermo è piccolo (Mobile) usando il controllo nativo del file o la larghezza
+var isSmallScreen = window.innerWidth < 650;
+var zoomFinale = isSmallScreen ? zoomMobileScelto : zoomDesktopScelto;
 
-// 2. DEZOOMIAMO: Sottraiamo 1.2 livelli per allontanare la visuale all'apertura
-var zoomAllontanato = zoomInizialeCalcolato - 1.2; 
+// Applichiamo prima il fit per centrare l'Italia, poi forziamo lo zoom desiderato
+map.getView().fit(confiniMappa, { size: map.getSize() });
+map.getView().setZoom(zoomFinale);
 
-// 3. Applichiamo la nuova vista dezoomata alla mappa
-map.getView().setZoom(zoomAllontanato);
+// Blocchiamo il minZoom al valore scelto per evitare che l'utente si allontani troppo
+map.getView().setMinZoom(zoomFinale);
+// =========================================================================
 
-// 4. Blocchiamo il minZoom a questo valore più lontano
-map.getView().setMinZoom(zoomAllontanato);// change cursor
+// change cursor
 function pointerOnFeature(evt) {
     if (evt.dragging) {
         return;
