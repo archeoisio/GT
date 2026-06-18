@@ -1,27 +1,31 @@
+// Definiamo i confini invalicabili (Riquadro Italia)
+var confiniMappa = [650000.000000, 4240000.000000, 2200000.000000, 5950000.000000];
+
 var map = new ol.Map({
     target: 'map',
     renderer: 'canvas',
     layers: layersList,
     view: new ol.View({
          maxZoom: 28, 
-         minZoom: 1, // Lascia pure 1 qui inizialmente
-		 enableRotation: false
+         minZoom: 1, 
+         enableRotation: false, // Mantiene il nord fisso (no rotazione da mobile)
+         extent: confiniMappa   // Blocca il trascinamento (pan) fuori da questi confini
     })
 });
 
 // Vista iniziale allontanata - Modificato padding per vedere tutta l'Italia con più margine
 map.getView().fit(
-    [650000.000000, 4240000.000000, 2200000.000000, 5950000.000000], 
+    confiniMappa, 
     { size: map.getSize(), padding: [40, 10, 20, 10] }
 );
 
-// --- COPIA E INCOLLA QUESTE RIGHE SUBITO SOTTO IL FIT ---
 // 1. Recuperiamo lo zoom esatto che OpenLayers ha appena calcolato per far entrare l'Italia
 var zoomInizialeCalcolato = map.getView().getZoom();
 
 // 2. Blocchiamo il minZoom a questo valore specifico, impedendo di andare oltre
 map.getView().setMinZoom(zoomInizialeCalcolato);
-// full zooms only
+
+// 3. Forziamo lo zoom solo su livelli interi (full zooms only)
 map.getView().setProperties({constrainResolution: true});
 
 // change cursor
