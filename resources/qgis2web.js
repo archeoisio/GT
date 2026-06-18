@@ -1,17 +1,17 @@
 // =========================================================================
 // 1. CONFIGURAZIONE DELLA VISTA E ZOOM SELEZIONABILI (INQUADRATURA TOTALE)
 // =========================================================================
-// 💡 MODIFICATO: Spostiamo il centro visivo più a Nord-Ovest (zona Toscana/Emilia) 
-// e più in alto per bilanciare la forma allungata dell'Italia nello schermo.
-var centroMappa = ol.proj.fromLonLat([11.5000, 43.5000]); 
+// Spostiamo il centro visivo leggermente più a Nord e a Ovest (Toscana/Emilia) 
+// per bilanciare la forma allungata dell'Italia e la presenza delle isole.
+var centroMappa = ol.proj.fromLonLat([12.0000, 43.8000]); 
 
-// Confini d'allerta allargati per dare respiro al posizionamento automatico
-var confiniGradi = [4.0, 34.0, 21.0, 48.5];
+// Confini geografici (Extent) calibrati per contenere l'Italia permettendo lo zoom indietro corretto
+var confiniGradi = [3.0, 34.5, 20.5, 48.0];
 var confiniBloccatiItalia = ol.extent.applyTransform(confiniGradi, ol.proj.getTransform('EPSG:4326', 'EPSG:3857'));
 
-// 💡 REGOLA QUI LO ZOOM FINALE PER IL "TUTTO INCLUSO"
-var zoomDesktopScelto = 1;  // Valore ideale per vedere l'Italia intera su monitor PC
-var zoomMobileScelto  = 4.6;  // Valore ideale per vedere l'Italia intera in verticale su Smartphone
+// REGOLA QUI LO ZOOM: 5.5 è il valore perfetto per visualizzare tutta l'Italia su PC desktop
+var zoomDesktopScelto = 5.5;  
+var zoomMobileScelto  = 4.5;  // Ottimale per schermi verticali degli smartphone
 
 var isSmallScreen = window.innerWidth < 650;
 var zoomFinale = isSmallScreen ? zoomMobileScelto : zoomDesktopScelto;
@@ -22,7 +22,7 @@ var doHighlight = false;
 var vistaIniziale = new ol.View({
     center: centroMappa,
     zoom: zoomFinale,
-    minZoom: 1.0, // Impedisce all'utente di perdersi nello spazio facendo troppo zoom indietro
+    minZoom: 4.8, // Impedisce di allontanarsi troppo evitando l'effetto "mappa persa nel vuoto grigio"
     maxZoom: 28, 
     extent: confiniBloccatiItalia, 
     enableRotation: false
@@ -38,14 +38,14 @@ var map = new ol.Map({
     view: vistaIniziale
 });
 
-// Forzatura atomica all'avvio: scavalca i calcoli automatici dei layer di QGIS
+// Forzatura post-rendering: sovrascrive i file di configurazione nativi dei vettoriali di QGIS
 map.once('postrender', function() {
     var view = map.getView();
     view.setCenter(centroMappa);
     view.setZoom(zoomFinale);
 });
 
-// Controllo dei confini durante il trascinamento (Rimette in assetto se l'utente scappa)
+// Vincolo di movimento: centra l'utente se tenta di trascinare la mappa fuori dalla penisola
 map.getView().on('change:center', function() {
     var view = map.getView();
     var center = view.getCenter();
@@ -53,6 +53,7 @@ map.getView().on('change:center', function() {
         view.setCenter(centroMappa); 
     }
 });
+
 // =========================================================================
 // 3. GESTIONE CURSORE
 // =========================================================================
@@ -144,16 +145,15 @@ closer.onclick = function() {
     return false;
 };
 
-// Configurazione per calcolare la posizione ottimale ed evitare il soffitto a Nord
 var overlayPopup = new ol.Overlay({
     element: container,
     autoPan: true,
     autoPanAnimation: {
-        duration: 250 // Spostamento fluido della mappa se serve
+        duration: 250 
     },
-    autoPanMargin: 30,         // Lascia 30px di margine dai bordi dello schermo
-    positioning: 'top-center', // Inverte l'ancoraggio: apre il popup VERSO IL BASSO rispetto al punto cliccato
-    offset: [0, 15]            // Distanza di sicurezza dal marker per non sovrapporsi al punto
+    autoPanMargin: 30,         
+    positioning: 'top-center', 
+    offset: [0, 15]            
 });
 map.addOverlay(overlayPopup);
 
