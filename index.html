@@ -313,8 +313,8 @@
 
         <script>
         (function() {
-            // CORRETTO: rimosse le doppie virgolette iniziali che bloccavano tutto lo script
-            var URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbymYCxxhCEs68VZiol7iVHzEOpfNUMUGU9hHoWNyjn_BDLExzXnx18oyeTn4aMVJG2F_w/exec";
+            // AGGIORNATO: URL con il nuovo script fornito
+            var URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwREb6t_Ri-ioN5j8U954M4IwyWf2nYFKWOLY_3omHB4UaNbkj2kCsEbw8K1RbnyPchbw/exec";
             var datiLingueOnline = {};
 
             var datiLivelli = {
@@ -376,7 +376,8 @@
                     });
             }
 
-            function inviaAggiornamentoOnline(nomeElemento, codiceLingua, valoreStato) {
+            // AGGIORNATO: Aggiunto il parametro regioneElemento
+            function inviaAggiornamentoOnline(nomeElemento, codiceLingua, valoreStato, regioneElemento) {
                 // Sincronizza subito anche lo stato locale per reattività immediata
                 if (!datiLingueOnline[nomeElemento]) datiLingueOnline[nomeElemento] = {};
                 datiLingueOnline[nomeElemento][codiceLingua] = valoreStato;
@@ -385,11 +386,16 @@
                     method: "POST",
                     mode: "no-cors",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ elemento: nomeElemento, lingua: codiceLingua, stato: valoreStato })
+                    body: JSON.stringify({ 
+                        elemento: nomeElemento, 
+                        lingua: codiceLingua, 
+                        stato: valoreStato,
+                        regione: regioneElemento // <-- Inviato a Google Sheets
+                    })
                 });
             }
 
-            // AGGIUNTO: Estrattore booleano sicuro indispensabile per interpretare correttamente i dati da Excel
+            // Estrattore booleano sicuro indispensabile per interpretare correttamente i dati da Excel
             function estraiStatoBooleano(obj, chiave) {
                 if (!obj || obj[chiave] === undefined) return false;
                 var val = obj[chiave];
@@ -545,7 +551,12 @@
 
                             // --- CONTENITORE AZIONI (ZOOM + 2 BANDIERE CHK) ---
                             var divAzioni = document.createElement('div');
-                            divAzioni.className = 'contenitore-azioni-punto';
+                            divAzioni.className = 'contenitore-actions-punto';
+                            divAzioni.style.display = 'flex';
+                            divAzioni.style.alignItems = 'center';
+                            divAzioni.style.gap = '4px';
+                            divAzioni.style.marginLeft = 'auto';
+                            divAzioni.style.paddingLeft = '5px';
 
                             var btnZoom = document.createElement('button');
                             btnZoom.className = 'btn-zoom-punto';
@@ -566,7 +577,7 @@
                             });
                             divAzioni.appendChild(btnZoom);
 
-                            // CORRETTO: Recupero stati online pregressi usando la funzione sicura estraiStatoBooleano
+                            // Recupero stati online pregressi
                             var recordPuntoOnline = datiLingueOnline[nomePunto];
                             var statoItaSalvato = estraiStatoBooleano(recordPuntoOnline, 'ita');
                             var statoIngSalvato = estraiStatoBooleano(recordPuntoOnline, 'ing');
@@ -579,8 +590,9 @@
                             chkIta.type = 'checkbox';
                             chkIta.className = 'chk-lingua';
                             chkIta.checked = statoItaSalvato;
+                            // AGGIURNATO: passa 'regione'
                             chkIta.addEventListener('change', function() {
-                                inviaAggiornamentoOnline(nomePunto, "ita", this.checked);
+                                inviaAggiornamentoOnline(nomePunto, "ita", this.checked, regione);
                             });
                             lblIta.appendChild(chkIta);
                             divAzioni.appendChild(lblIta);
@@ -593,8 +605,9 @@
                             chkIng.type = 'checkbox';
                             chkIng.className = 'chk-lingua';
                             chkIng.checked = statoIngSalvato;
+                            // AGGIURNATO: passa 'regione'
                             chkIng.addEventListener('change', function() {
-                                inviaAggiornamentoOnline(nomePunto, "ing", this.checked);
+                                inviaAggiornamentoOnline(nomePunto, "ing", this.checked, regione);
                             });
                             lblIng.appendChild(chkIng);
                             divAzioni.appendChild(lblIng);
