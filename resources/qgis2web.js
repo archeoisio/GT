@@ -9,7 +9,7 @@ var confiniGradiAmpio = [-35.0, 20.0, 45.0, 70.0];
 var confiniBloccatiMappa = ol.extent.applyTransform(confiniGradiAmpio, ol.proj.getTransform('EPSG:4326', 'EPSG:3857'));
 
 // 🌍 MODIFICA QUESTI DUE VALORI PER REGOLARE LO ZOOM COME VUOI
-var zoomDesktopScelto = 6.0;  // Abbassa a 4.0 o 3.0 se vuoi vedere più territorio intorno
+var zoomDesktopScelto = 5.9;  // Abbassa a 4.0 o 3.0 se vuoi vedere più territorio intorno
 var zoomMobileScelto  = 4.0;  
 
 var isSmallScreen = window.innerWidth < 650;
