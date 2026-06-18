@@ -4,7 +4,8 @@ var map = new ol.Map({
     layers: layersList,
     view: new ol.View({
          maxZoom: 28, 
-         minZoom: 1 // Lascia pure 1 qui inizialmente
+         minZoom: 1, // Lascia pure 1 qui inizialmente
+		 enableRotation: false
     })
 });
 
