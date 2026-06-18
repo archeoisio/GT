@@ -66,7 +66,55 @@ var jsonSource_sitiguidavol2_5 = new ol.source.Vector({
 jsonSource_sitiguidavol2_5.addFeatures(features_sitiguidavol2_5);
 cluster_sitiguidavol2_5 = new ol.source.Cluster({
     distance: 30,
-    source: jsonSource_sitiguidavol2_5
+    source: jsonSource_sitiguidavol2_5,
+    
+    // 1. Diciamo a OpenLayers di mantenere separate le geometrie in base alla Regione
+    geometryFunction: function(feature) {
+        var regione = feature.get('Regione') || 'Generica';
+        
+        // Se l'utente zooma molto vicino, disattiviamo il cluster e mostriamo i punti reali
+        if (typeof map !== 'undefined' && map.getView().getZoom() > 9) {
+            return feature.getGeometry();
+        }
+        
+        if (!feature._clusterGeom) {
+            feature._clusterGeom = feature.getGeometry().clone();
+            feature._clusterGeom.set('RegioneCluster', regione);
+        }
+        return feature.getGeometry();
+    },
+    
+    // 2. Filtriamo le feature raggruppate assicurandoci che appartengano alla STESSA regione
+    createCluster: function(features) {
+        if (features.length === 0) return null;
+        
+        // Prendiamo la regione di riferimento dal primo punto del gruppo
+        var regioneTarget = features[0].get('Regione');
+        
+        // Teniamo solo i punti che hanno la stessa identica regione
+        var featuresFiltrate = features.filter(function(f) {
+            return f.get('Regione') === regioneTarget;
+        });
+        
+        // Calcoliamo le coordinate medie del cluster basandoci solo sui punti della stessa regione
+        var coordinates = [];
+        featuresFiltrate.forEach(function(f) {
+            coordinates.push(f.getGeometry().getCoordinates());
+        });
+        
+        var x = 0, y = 0;
+        featuresFiltrate.forEach(function(f) {
+            var coord = f.getGeometry().getCoordinates();
+            x += coord[0];
+            y += coord[1];
+        });
+        var centroCluster = [x / featuresFiltrate.length, y / featuresFiltrate.length];
+        
+        return new ol.Feature({
+            geometry: new ol.geom.Point(centroCluster),
+            features: featuresFiltrate
+        });
+    }
 });
 var lyr_sitiguidavol2_5 = new ol.layer.Vector({
     declutter: false,
