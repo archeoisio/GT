@@ -34,17 +34,10 @@
             padding: 2px !important;
         } 
         
-        /* === RIPRISTINO COMPLETO IMPOSTAZIONI ORIGINARIE SINISTRA === */
-        /* Rimossi i blocchi personalizzati per .ol-zoom e .gcd-gl-control 
-           in modo che qgis2web li gestisca con il suo layout originale di fabbrica */
-        
         .ol-attribution {
             max-width: calc(100% - 320px) !important;
         }
 
-        /* === FORZATURA SOVRAIMPRESSIONE LEGENDA NATIVA === */
-        /* Applichiamo un livello z-index altissimo (2000+) a tutti i possibili selettori 
-           del LayerSwitcher nativo, assicurando che passi sopra al pannello dei filtri */
         .layer-switcher, 
         .layer-switcher.shown, 
         .ol-control.layer-switcher, 
@@ -61,18 +54,17 @@
             margin: 0;
         }
         
-        /* === STRUTTURA CONTROLLO HOME FLUTTUANTE ACCANTO LA LEGENDA === */
         .mappa-controllo-home {
             position: absolute;
-            top: 10px; /* Allineato all'altezza della legenda di fabbrica */
-            right: 70px; /* Spinto a sinistra per fare spazio all'icona della legenda */
-            z-index: 1; /* Superiore alla mappa e coordinato con la legenda */
+            top: 10px;
+            right: 70px;
+            z-index: 1;
         }
         .btn-mappa-home {
             background-color: #f8f8f8;
             color: #444444;
             border: 1px solid rgba(0,0,0,0.4);
-            border-radius: 2px; /* Uniformato allo stile di fabbrica dei pulsanti OpenLayers */
+            border-radius: 2px;
             cursor: pointer;
             width: 40px;
             height: 40px;
@@ -87,16 +79,14 @@
             background-color: rgba(248, 248, 248, 0.7);
         }
 
-        /* Stili per il pannello di controllo filtri */
         .pannello-features {
             position: absolute; 
-            top: 200px; /* Lascia lo spazio in alto per l'icona della legenda nativa */
+            top: 200px;
             right: 10px; 
-            z-index: 500; /* Abbassato nettamente per perdere qualsiasi conflitto con la legenda */
+            z-index: 500;
             background: white; 
             padding: 12px; 
             border-radius: 6px; 
-            /* MODIFICATO: Calcola dinamicamente l'altezza massima per non uscire dallo schermo e abilita lo scroll */
             max-height: calc(100vh - 240px); 
             overflow-y: auto; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.25); 
@@ -131,9 +121,6 @@
         .btn-toggle-pannello:hover {
             background: #e0e0e0;
         }
-        .pannello-corpo {
-            /* Rimossa l'altezza massima ridondante qui, gestisce tutto il contenitore padre principale */
-        }
         .pannello-features.ridotto {
             max-height: 40px !important;
             overflow: hidden !important;
@@ -144,7 +131,6 @@
             display: none !important;
         }
         
-        /* Titolo sezione */
         .titolo-sezione {
             margin-top: 10px;
             margin-bottom: 6px;
@@ -162,7 +148,6 @@
             color: #004499;
         }
         
-        /* Stili per la struttura ad albero collassabile */
         .nodo-regione {
             font-weight: bold;
             background: #f5f5f5;
@@ -182,16 +167,16 @@
         }
         .nodo-punto {
             font-weight: normal;
-            margin-left: 35px;
-            padding: 2px 0;
+            margin-left: 15px; /* Ridotto il margine sinistro globale per far spazio alle icone a destra */
+            padding: 4px 0;
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             justify-content: space-between;
             font-size: 12px;
             color: #666;
+            border-bottom: 1px dashed #eee;
         }
         
-        /* Icone per espandere/comprimere */
         .freccia-albero {
             display: inline-block;
             width: 12px;
@@ -206,7 +191,6 @@
             color: #0066cc;
         }
         
-        /* Contenitori dei figli (nascosti di default) */
         .contenitore-figli {
             display: none; 
         }
@@ -214,7 +198,6 @@
             display: block; 
         }
         
-        /* Contenitore delle macro-sezioni (nascosto di default) */
         .contenitore-sezione {
             display: none;
         }
@@ -224,12 +207,12 @@
 
         .lbl-contenitore-punto {
             display: flex;
-            align-items: flex-start;
-            max-width: 84%;
+            align-items: center;
+            max-width: 55%; /* Ridotto per evitare sovrapposizioni con le azioni a destra */
+            word-wrap: break-word;
         }
         .chk-filtro {
             margin-right: 5px;
-            margin-top: 2px;
             cursor: pointer;
         }
         .lbl-filtro {
@@ -243,18 +226,40 @@
             font-weight: normal;
             margin-left: 4px;
         }
+        
+        /* === STRUTTURA LINGUE E CONTROLLI ALLINEATI === */
+        .contenitore-azioni-punto {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: auto;
+            padding-left: 5px;
+        }
         .btn-zoom-punto {
             background: none;
             border: none;
             color: #0066cc;
             cursor: pointer;
-            padding: 0 4px;
+            padding: 0 2px;
             font-size: 12px;
             line-height: 1;
-            margin-top: 1px;
         }
         .btn-zoom-punto:hover {
             color: #004499;
+        }
+        .label-bandiera {
+            font-size: 13px;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 1px;
+            cursor: pointer;
+        }
+        .chk-lingua {
+            cursor: pointer;
+            margin: 0;
+            width: 13px;
+            height: 13px;
         }
         </style>
         <title></title>
@@ -309,6 +314,9 @@
 
         <script>
         (function() {
+            var URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbxSIXDOcJ6xYMKJqJYxTqLenTBLMs_uil8UyxC3H1WzfoCroUtoA_K3hIMf8G53dIxyrg/exec";
+            var datiLingueOnline = {};
+
             var datiLivelli = {
                 siti: { tutte: [], disattivate: [], campoNome: 'Sito/Museo', sorgenteOL: null },
                 musei: { tutte: [], disattivate: [], campoNome: 'Museo', sorgenteOL: null }
@@ -354,6 +362,28 @@
             }
             impostaToggleMacroSezione('titolo-siti', 'cont-siti');
             impostaToggleMacroSezione('titolo-musei', 'cont-musei');
+
+            function scaricaDatiOnlineEInizializza() {
+                fetch(URL_GOOGLE_SCRIPT)
+                    .then(function(response) { return response.json(); })
+                    .then(function(data) {
+                        datiLingueOnline = data || {};
+                        inizializzaFiltriAvanzati();
+                    })
+                    .catch(function(err) {
+                        console.error("Impossibile caricare i dati dal foglio online, uso fallback vuoto:", err);
+                        inizializzaFiltriAvanzati();
+                    });
+            }
+
+            function inviaAggiornamentoOnline(nomeElemento, codiceLingua, valoreStato) {
+                fetch(URL_GOOGLE_SCRIPT, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ elemento: nomeElemento, lingua: codiceLingua, stato: valoreStato })
+                });
+            }
 
             function inizializzaFiltriAvanzati() {
                 if (typeof format_sitiguidavol2_5 !== 'undefined' && typeof json_sitiguidavol2_5 !== 'undefined') {
@@ -502,6 +532,10 @@
                             lblContenitore.appendChild(lblPto);
                             divPto.appendChild(lblContenitore);
 
+                            // --- CONTENITORE AZIONI (ZOOM + 2 BANDIERE CHK) ---
+                            var divAzioni = document.createElement('div');
+                            divAzioni.className = 'contenitore-azioni-punto';
+
                             var btnZoom = document.createElement('button');
                             btnZoom.className = 'btn-zoom-punto';
                             btnZoom.title = 'Zoom sul sito';
@@ -519,8 +553,41 @@
                                     });
                                 }
                             });
-                            
-                            divPto.appendChild(btnZoom);
+                            divAzioni.appendChild(btnZoom);
+
+                            // Recupero stati online pregressi
+                            var statoItaSalvato = (datiLingueOnline[nomePunto] && datiLingueOnline[nomePunto].ita) ? true : false;
+                            var statoIngSalvato = (datiLingueOnline[nomePunto] && datiLingueOnline[nomePunto].ing) ? true : false;
+
+                            // Checkbox ITA
+                            var lblIta = document.createElement('label');
+                            lblIta.className = 'label-bandiera';
+                            lblIta.innerHTML = '🇮🇹';
+                            var chkIta = document.createElement('input');
+                            chkIta.type = 'checkbox';
+                            chkIta.className = 'chk-lingua';
+                            chkIta.checked = statoItaSalvato;
+                            chkIta.addEventListener('change', function() {
+                                inviaAggiornamentoOnline(nomePunto, "ita", this.checked);
+                            });
+                            lblIta.appendChild(chkIta);
+                            divAzioni.appendChild(lblIta);
+
+                            // Checkbox ING
+                            var lblIng = document.createElement('label');
+                            lblIng.className = 'label-bandiera';
+                            lblIng.innerHTML = '🇬🇧';
+                            var chkIng = document.createElement('input');
+                            chkIng.type = 'checkbox';
+                            chkIng.className = 'chk-lingua';
+                            chkIng.checked = statoIngSalvato;
+                            chkIng.addEventListener('change', function() {
+                                inviaAggiornamentoOnline(nomePunto, "ing", this.checked);
+                            });
+                            lblIng.appendChild(chkIng);
+                            divAzioni.appendChild(lblIng);
+
+                            divPto.appendChild(divAzioni);
                             divPuntiContenitore.appendChild(divPto);
 
                             chkPto.addEventListener('change', function() {
@@ -635,7 +702,7 @@
             }
 
             window.addEventListener('DOMContentLoaded', function() {
-                setTimeout(inizializzaFiltriAvanzati, 600);
+                setTimeout(scaricaDatiOnlineEInizializza, 600);
             });
         })();
         </script>
