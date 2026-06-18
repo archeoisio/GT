@@ -16,7 +16,11 @@ var style_sitiguidavol2_5 = function(feature, resolution){
     var offsetX = 0; // Centrato per il testo del cluster
     var offsetY = 0;
     var value;
-    var clusteredFeatures = feature.get("features");
+ var clusteredFeatures = feature.get("features");
+    // SE clusteredFeatures non esiste, assegna un array vuoto [] così .length non va in crash ed è uguale a 0
+    if (!clusteredFeatures) {
+        clusteredFeatures = [];
+    }
     size = clusteredFeatures.length;
     
     // Configurazione colore Blu uniforme per punti e cluster
