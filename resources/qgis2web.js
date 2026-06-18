@@ -16,7 +16,7 @@ var map = new ol.Map({
 // Vista iniziale allontanata - Sfrutta il padding per dare respiro all'inquadratura
 map.getView().fit(
     confiniMappa, 
-    { size: map.getSize(), padding: [40, 40, 40, 40] }
+    { size: map.getSize(), padding: [60, 60, 60, 60] }
 );
 
 // 1. Recuperiamo lo zoom decimale esatto (es. 4.35)
