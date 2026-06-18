@@ -5,7 +5,7 @@
 var centroMappa = ol.proj.fromLonLat([12.5000, 42.0020]); 
 
 // Rettangolo di movimento (Europa/Mediterraneo) per dare spazio allo zoom
-var confiniGradiAmpio = [-3.70, 35.80, 27.00, 47.25];
+var confiniGradiAmpio = [-3.70, 37, 27.00, 48];
 var confiniBloccatiMappa = ol.extent.applyTransform(confiniGradiAmpio, ol.proj.getTransform('EPSG:4326', 'EPSG:3857'));
 
 // 🌍 MODIFICA QUESTI DUE VALORI PER REGOLARE LO ZOOM COME VUOI
