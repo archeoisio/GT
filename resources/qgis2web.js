@@ -1,4 +1,3 @@
-
 var map = new ol.Map({
     target: 'map',
     renderer: 'canvas',
@@ -8,13 +7,16 @@ var map = new ol.Map({
     })
 });
 
-//initial view - epsg:3857 coordinates if not "Match project CRS"
-map.getView().fit([386170.751050, 4404182.278216, 3526858.333407, 5776271.948619], map.getSize());
+// Vista iniziale allontanata - Modificato padding per vedere tutta l'Italia con più margine
+map.getView().fit(
+    [386170.751050, 4404182.278216, 3526858.333407, 5776271.948619], 
+    { size: map.getSize(), padding: [60, 60, 60, 60] }
+);
 
-//full zooms only
+// full zooms only
 map.getView().setProperties({constrainResolution: true});
 
-//change cursor
+// change cursor
 function pointerOnFeature(evt) {
     if (evt.dragging) {
         return;
@@ -264,7 +266,7 @@ function onPointerMove(evt) {
     } else {
         popupText += '</ul>';
     }
-    
+	
 	if (doHighlight) {
         if (currentFeature !== highlight) {
             if (highlight) {
