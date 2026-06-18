@@ -33,10 +33,10 @@
             background-color: rgba(255,255,255,.4) !important;
             padding: 2px !important;
         } 
-        /* Controlli nativi dello zoom spostati a destra del pannello */
+        /* Ripristinati i controlli nativi dello zoom nella loro posizione standard a sinistra */
         .ol-zoom {
             top: 15px !important;
-            left: 310px !important;
+            left: 10px !important;
         }
         .ol-attribution {
             max-width: calc(100% - 320px) !important;
@@ -50,16 +50,16 @@
             padding: 0;
             margin: 0;
         }
-        /* Stili per il pannello di controllo filtri */
+        /* Stili per il pannello di controllo filtri SPOSTATO A DESTRA SOTTO LA LEGENDA */
         .pannello-features {
             position: absolute; 
-            top: 10px; 
-            left: 10px; 
+            top: 50px; /* Lascia lo spazio in alto per il toggle della legenda nativa */
+            right: 10px; /* Posizionato sul lato destro */
             z-index: 1000; 
             background: white; 
             padding: 12px; 
             border-radius: 6px; 
-            max-height: calc(100% - 40px); 
+            max-height: calc(100% - 80px); 
             overflow-y: hidden; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.25); 
             width: 280px; 
@@ -94,7 +94,7 @@
             background: #e0e0e0;
         }
         .pannello-corpo {
-            max-height: calc(100vh - 100px);
+            max-height: calc(100vh - 140px);
             overflow-y: auto;
         }
         .pannello-features.ridotto {
@@ -162,10 +162,10 @@
         
         /* Contenitori dei figli (nascosti di default) */
         .contenitore-figli {
-            display: none; /* Inizialmente chiuso */
+            display: none; 
         }
         .contenitore-figli.aperto {
-            display: block; /* Mostrato quando aperto */
+            display: block; 
         }
 
         .lbl-contenitore-punto {
@@ -303,10 +303,9 @@
                     var divReg = document.createElement('div');
                     divReg.className = 'nodo-regione';
                     
-                    // Freccia per espandere la regione
                     var frecciaReg = document.createElement('span');
                     frecciaReg.className = 'freccia-albero';
-                    frecciaReg.innerHTML = '►'; // Icona di chiuso
+                    frecciaReg.innerHTML = '►'; 
                     
                     var chkReg = document.createElement('input');
                     chkReg.type = 'checkbox';
@@ -324,12 +323,10 @@
                     divReg.appendChild(lblReg);
                     container.appendChild(divReg);
 
-                    // Contenitore delle province (collassabile)
                     var divProvContenitore = document.createElement('div');
                     divProvContenitore.className = 'contenitore-figli';
                     container.appendChild(divProvContenitore);
 
-                    // Evento click sulla freccia della regione per aprirla/chiuderla
                     frecciaReg.addEventListener('click', function() {
                         if (divProvContenitore.classList.contains('aperto')) {
                             divProvContenitore.classList.remove('aperto');
@@ -346,7 +343,6 @@
                         var divProv = document.createElement('div');
                         divProv.className = 'nodo-provincia';
                         
-                        // Freccia per espandere la provincia
                         var frecciaProv = document.createElement('span');
                         frecciaProv.className = 'freccia-albero';
                         frecciaProv.innerHTML = '►';
@@ -367,12 +363,10 @@
                         divProv.appendChild(lblProv);
                         divProvContenitore.appendChild(divProv);
 
-                        // Contenitore dei singoli punti (collassabile)
                         var divPuntiContenitore = document.createElement('div');
                         divPuntiContenitore.className = 'contenitore-figli';
                         divProvContenitore.appendChild(divPuntiContenitore);
 
-                        // Evento click sulla freccia della provincia per aprirla/chiuderla
                         frecciaProv.addEventListener('click', function() {
                             if (divPuntiContenitore.classList.contains('aperto')) {
                                 divPuntiContenitore.classList.remove('aperto');
