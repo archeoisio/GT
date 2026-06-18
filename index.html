@@ -34,25 +34,22 @@
             padding: 2px !important;
         } 
         
-        /* === ALLINEAMENTO PERFETTO CONTROLLI A SINISTRA === */
-        /* Posiziona lo zoom nativo */
-        .ol-zoom {
-            top: 15px !important;
-            left: 10px !important;
-            margin-bottom: 5px !important;
-        }
-        /* Riposiziona il cerca nativo di qgis2web (Geocoder Photon) esattamente sotto lo zoom */
-        .gcd-gl-control {
-            top: 85px !important; /* Calcolato per stare millimetricamente sotto i tasti + e - */
-            left: 10px !important;
-        }
+        /* === RIPRISTINO COMPLETO IMPOSTAZIONI ORIGINARIE SINISTRA === */
+        /* Rimossi i blocchi personalizzati per .ol-zoom e .gcd-gl-control 
+           in modo che qgis2web li gestisca con il suo layout originale di fabbrica */
         
         .ol-attribution {
             max-width: calc(100% - 320px) !important;
         }
-        /* Assicuriamo che il pannello dei layer nativo di QGIS2Web stia SOPRA al nostro pannello */
-        .layer-switcher {
-            z-index: 1005 !important;
+
+        /* === FORZATURA SOVRAIMPRESSIONE LEGENDA NATIVA === */
+        /* Applichiamo un livello z-index altissimo (2000+) a tutti i possibili selettori 
+           del LayerSwitcher nativo, assicurando che passi sopra al pannello dei filtri */
+        .layer-switcher, 
+        .layer-switcher.shown, 
+        .ol-control.layer-switcher, 
+        .ol-control.layer-switcher.shown {
+            z-index: 99999 !important;
         }
         </style>
 
@@ -63,12 +60,12 @@
             padding: 0;
             margin: 0;
         }
-        /* Stili per il pannello di controllo filtri SPOSTATO A DESTRA SOTTO LA LEGENDA */
+        /* Stili per il pannello di controllo filtri */
         .pannello-features {
             position: absolute; 
-            top: 50px; /* Spazio in alto per il toggle della legenda nativa */
+            top: 50px; /* Lascia lo spazio in alto per l'icona della legenda nativa */
             right: 10px; 
-            z-index: 999; /* Leggermente inferiore a 1005 per permettere alla legenda di coprirlo */
+            z-index: 500; /* Abbassato nettamente per perdere qualsiasi conflitto con la legenda */
             background: white; 
             padding: 12px; 
             border-radius: 6px; 
@@ -120,7 +117,7 @@
             display: none !important;
         }
         
-        /* Titolo sezione ora interattivo e cliccabile */
+        /* Titolo sezione */
         .titolo-sezione {
             margin-top: 10px;
             margin-bottom: 6px;
@@ -182,7 +179,7 @@
             color: #0066cc;
         }
         
-        /* Contenitori dei figli (nascosti di default nell'albero delle regioni) */
+        /* Contenitori dei figli (nascosti di default) */
         .contenitore-figli {
             display: none; 
         }
@@ -298,7 +295,7 @@
                 }
             });
 
-            // Gestione apertura/chiusura macro-sezioni (Siti / Musei) - Di default chiusi ora
+            // Gestione apertura/chiusura macro-sezioni (Siti / Musei)
             function impostaToggleMacroSezione(idTitolo, idContenitore) {
                 document.getElementById(idTitolo).addEventListener('click', function(e) {
                     if(e.target.classList.contains('badge-conteggio')) return;
