@@ -10,7 +10,7 @@ var map = new ol.Map({
 // Vista iniziale allontanata - Modificato padding per vedere tutta l'Italia con più margine
 map.getView().fit(
     [650000.000000, 4240000.000000, 2200000.000000, 5950000.000000], 
-    { size: map.getSize(), padding: [50, 80, 50, 80] }
+    { size: map.getSize(), padding: [40, 10, 20, 10] }
 );
 
 // full zooms only
@@ -370,6 +370,16 @@ function onSingleClickFeatures(evt) {
     
     map.forEachFeatureAtPixel(pixel, function(feature, layer) {
         if (layer && feature instanceof ol.Feature && (layer.get("interactive") || layer.get("interactive") === undefined)) {
+            
+            // === FILTRO DI ESCLUSIONE LIVELLI REGIONI E PROVINCE ===
+            var nomeLayer = layer.get('title') || '';
+            if (nomeLayer.toLowerCase().includes('regioni') || 
+                nomeLayer.toLowerCase().includes('provincie') || 
+                nomeLayer.toLowerCase().includes('unitaterritorialisovracomunali')) {
+                return; // Salta questo livello di sfondo e non aggiungere dati al popup
+            }
+            // =======================================================
+
             var doPopup = false;
             for (var k in layer.get('fieldImages')) {
                 if (layer.get('fieldImages')[k] !== "Hidden") {
