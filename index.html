@@ -391,7 +391,7 @@
 
                     if (!struttura[reg]) struttura[reg] = {};
                     if (!struttura[reg][prov]) struttura[reg][prov] = [];
-                    structure[reg][prov].push(f);
+                    struttura[reg][prov].push(f); // Fissato: ora usa correttamente "struttura"
                 });
 
                 Object.keys(struttura).sort().forEach(function(regione) {
