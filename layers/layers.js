@@ -7,6 +7,13 @@ var lyr_XYZLayer_0 = new ol.layer.Tile({
         attributions: ' ',
         url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
     })
+var lyr_Satellite_0 = new ol.layer.Tile({
+    'title': 'Satellite (Google)',
+    'opacity': 1.000000,
+    source: new ol.source.XYZ({
+        attributions: ' ',
+        url: 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}' // Satellite con etichette stradali
+    })
 });
 
 var format_regioni_1 = new ol.format.GeoJSON();
