@@ -1,15 +1,15 @@
 // =========================================================================
-// 1. CONFIGURAZIONE DELLA VISTA E ZOOM SELEZIONABILI (SBLOCCATO)
+// 1. CONFIGURAZIONE DELLA VISTA E ZOOM SELEZIONABILI (SBLOCCATO COMPLETAMENTE)
 // =========================================================================
 var centroMappa = ol.proj.fromLonLat([12.5674, 41.8719]); 
 
 // Confini leggermente più ampi per evitare che OpenLayers rifiuti i tuoi livelli di zoom
-var confiniGradi = [6.0, 35.0, 19.0, 47.5];
+var confiniGradi = [5.0, 34.0, 20.0, 48.0];
 var confiniBloccatiItalia = ol.extent.applyTransform(confiniGradi, ol.proj.getTransform('EPSG:4326', 'EPSG:3857'));
 
-// REGOLA QUI LO ZOOM: Ora risponderà istantaneamente ai comandi
-var zoomDesktopScelto = 1;  // Cambia questo valore (es. 5.0 più lontano, 6.5 più vicino) per testare
-var zoomMobileScelto  = 4.5;  
+// 💡 REGOLA QUI LO ZOOM: Metti 5.2 per vedere tutta l'Italia su PC.
+var zoomDesktopScelto = 5.2;  // Modifica questo valore per avvicinare (es. 6) o allontanare (es. 4.8)
+var zoomMobileScelto  = 4.3;  // Ottimale per smartphone
 
 var isSmallScreen = window.innerWidth < 650;
 var zoomFinale = isSmallScreen ? zoomMobileScelto : zoomDesktopScelto;
@@ -20,14 +20,14 @@ var doHighlight = false;
 var vistaIniziale = new ol.View({
     center: centroMappa,
     zoom: zoomFinale,
-    minZoom: 4.0,                  // Lasciamo il minZoom più basso dello zoom iniziale per sbloccarlo
+    minZoom: Math.min(2, zoomFinale), // Il minimo si adatta dinamicamente per non bloccare lo zoom scelto
     maxZoom: 28, 
     extent: confiniBloccatiItalia, 
     enableRotation: false
 });
 
 // =========================================================================
-// 2. INIZIALIZZAZIONE MAPPA
+// 2. INIZIALIZZAZIONE MAPPA E RIPRISTINO FORZATO VISTA
 // =========================================================================
 var map = new ol.Map({
     target: 'map',
@@ -36,7 +36,16 @@ var map = new ol.Map({
     view: vistaIniziale
 });
 
-// FUNZIONE DI CONTROLLO DEL CENTRO CORRETTA (Senza bloccare lo zoom di avvio)
+// 💡 FORZATURA AD AVVIO AVVENUTO: Risolve i conflitti causati dai pesi dei Layer GeoJSON
+map.once('postrender', function() {
+    var view = map.getView();
+    view.setCenter(centroMappa);
+    view.setZoom(zoomFinale);
+    // Blocca lo zoom indietro solo dopo che lo zoom iniziale è stato applicato con successo
+    view.setMinZoom(zoomFinale); 
+});
+
+// Funzione di controllo del centro (Evita che l'utente trascini la mappa fuori dall'Italia)
 map.getView().on('change:center', function() {
     var view = map.getView();
     var center = view.getCenter();
@@ -44,6 +53,7 @@ map.getView().on('change:center', function() {
         view.setCenter(centroMappa); 
     }
 });
+
 // =========================================================================
 // 3. GESTIONE CURSORE
 // =========================================================================
@@ -113,8 +123,7 @@ var topRightContainerDiv = document.getElementById('top-right-container');
 var bottomRightContainerDiv = document.getElementById('bottom-right-container');
 
 // =========================================================================
-// =========================================================================
-// 5. CONFIGURAZIONE POPUP E LOGICA CAMPI (AGGIORNATO CON POSIZIONAMENTO AUTOMATICO)
+// 5. CONFIGURAZIONE POPUP E LOGICA CAMPI (POSIZIONAMENTO AUTOMATICO ANTI-TAGLIO)
 // =========================================================================
 var container = document.getElementById('popup');
 var content = document.getElementById('popup-content');
@@ -136,16 +145,16 @@ closer.onclick = function() {
     return false;
 };
 
-// 💡 SOSTITUITO QUI: Configurazione per calcolare la posizione ottimale
+// Configurazione per calcolare la posizione ottimale ed evitare il soffitto a Nord
 var overlayPopup = new ol.Overlay({
     element: container,
     autoPan: true,
     autoPanAnimation: {
-        duration: 250 // Spostamento fluido
+        duration: 250 // Spostamento fluido della mappa se serve
     },
-    autoPanMargin: 30,         // Lascia 30px di margine dai bordi per non toccare i limiti
-    positioning: 'top-center', // Ancoraggio invertito: apre il popup VERSO IL BASSO rispetto al punto cliccato
-    offset: [0, 15]            // Distanza di sicurezza dal marker per non coprirlo
+    autoPanMargin: 30,         // Lascia 30px di margine dai bordi dello schermo
+    positioning: 'top-center', // Inverte l'ancoraggio: apre il popup VERSO IL BASSO rispetto al punto cliccato
+    offset: [0, 15]            // Distanza di sicurezza dal marker per non sovrapporsi al punto
 });
 map.addOverlay(overlayPopup);
 
@@ -199,8 +208,9 @@ function createPopupField(currentFeature, currentFeatureKeys, layer) {
     }
     return popupText;
 }
+
 // =========================================================================
-// 6. HIGHLIGHT (POINTERMOVE SENZA POPUP AUTOMATICO)
+// 6. HIGHLIGHT (POINTERMOVE)
 // =========================================================================
 var collection = new ol.Collection();
 var featureOverlay = new ol.layer.Vector({
