@@ -68,40 +68,40 @@ cluster_sitiguidavol2_5 = new ol.source.Cluster({
     distance: 30,
     source: jsonSource_sitiguidavol2_5,
     
-    // 1. Diciamo a OpenLayers di mantenere separate le geometrie in base alla Regione
+    // 1. Identifichiamo la geometria in modo sicuro
     geometryFunction: function(feature) {
-        var regione = feature.get('Regione') || 'Generica';
+        if (!feature || !feature.getGeometry()) {
+            return null;
+        }
         
-        // Se l'utente zooma molto vicino, disattiviamo il cluster e mostriamo i punti reali
+        // Se l'utente zooma molto vicino, restituiamo la geometria normale disattivando l'effetto cluster
         if (typeof map !== 'undefined' && map.getView().getZoom() > 9) {
             return feature.getGeometry();
         }
         
-        if (!feature._clusterGeom) {
-            feature._clusterGeom = feature.getGeometry().clone();
-            feature._clusterGeom.set('RegioneCluster', regione);
-        }
         return feature.getGeometry();
     },
     
-    // 2. Filtriamo le feature raggruppate assicurandoci che appartengano alla STESSA regione
+    // 2. Raggruppiamo i punti in cluster separati rigorosamente per Regione
     createCluster: function(features) {
-        if (features.length === 0) return null;
+        // CONTROLLO DI SICUREZZA: se non ci sono feature o l'array è vuoto, evita il crash
+        if (!features || features.length === 0 || !features[0]) {
+            return null;
+        }
         
         // Prendiamo la regione di riferimento dal primo punto del gruppo
         var regioneTarget = features[0].get('Regione');
         
-        // Teniamo solo i punti che hanno la stessa identica regione
+        // Teniamo solo i punti che appartengono alla STESSA regione
         var featuresFiltrate = features.filter(function(f) {
-            return f.get('Regione') === regioneTarget;
+            return f && f.get('Regione') === regioneTarget;
         });
         
-        // Calcoliamo le coordinate medie del cluster basandoci solo sui punti della stessa regione
-        var coordinates = [];
-        featuresFiltrate.forEach(function(f) {
-            coordinates.push(f.getGeometry().getCoordinates());
-        });
+        if (featuresFiltrate.length === 0) {
+            return null;
+        }
         
+        // Calcoliamo il centro geometrico (coordinate medie) basandoci solo sui punti della stessa regione
         var x = 0, y = 0;
         featuresFiltrate.forEach(function(f) {
             var coord = f.getGeometry().getCoordinates();
@@ -110,6 +110,7 @@ cluster_sitiguidavol2_5 = new ol.source.Cluster({
         });
         var centroCluster = [x / featuresFiltrate.length, y / featuresFiltrate.length];
         
+        // Generiamo il cluster finale contenente solo i punti della stessa regione
         return new ol.Feature({
             geometry: new ol.geom.Point(centroCluster),
             features: featuresFiltrate
