@@ -61,7 +61,7 @@
             margin: 0;
         }
         
-        /* === STRUTTURA CONTROLLO HOME FLUTTUANTE ACCANTO ALLA LEGENDA === */
+        /* === STRUTTURA CONTROLLO HOME FLUTTUANTE ACCANTO LA LEGENDA === */
         .mappa-controllo-home {
             position: absolute;
             top: 10px; /* Allineato all'altezza della legenda di fabbrica */
@@ -96,8 +96,9 @@
             background: white; 
             padding: 12px; 
             border-radius: 6px; 
-            max-height: calc(100% - 80px); 
-            overflow-y: hidden; 
+            /* MODIFICATO: Calcola dinamicamente l'altezza massima per non uscire dallo schermo e abilita lo scroll */
+            max-height: calc(100vh - 240px); 
+            overflow-y: auto; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.25); 
             width: 280px; 
             font-family: 'Open Sans', sans-serif; 
@@ -131,8 +132,7 @@
             background: #e0e0e0;
         }
         .pannello-corpo {
-            max-height: calc(100vh - 140px);
-            overflow-y: auto;
+            /* Rimossa l'altezza massima ridondante qui, gestisce tutto il contenitore padre principale */
         }
         .pannello-features.ridotto {
             max-height: 40px !important;
@@ -391,7 +391,7 @@
 
                     if (!struttura[reg]) struttura[reg] = {};
                     if (!struttura[reg][prov]) struttura[reg][prov] = [];
-                    struttura[reg][prov].push(f); // Fissato: ora usa correttamente "struttura"
+                    struttura[reg][prov].push(f);
                 });
 
                 Object.keys(struttura).sort().forEach(function(regione) {
