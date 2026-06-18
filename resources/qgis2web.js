@@ -12,6 +12,12 @@ var isSmallScreen = window.innerWidth < 650;
 var zoomFinale = isSmallScreen ? zoomMobileScelto : zoomDesktopScelto;
 
 // =========================================================================
+// ATTIVAZIONE POPUP E EVIDENZIATORE (RIPRISTINATI)
+// =========================================================================
+var doHover = false;     // Metti true se vuoi il popup al passaggio del mouse
+var doHighlight = true;  // Metti true se vuoi che l'elemento si illumini
+
+// =========================================================================
 // 2. INIZIALIZZAZIONE MAPPA
 // =========================================================================
 var map = new ol.Map({
@@ -496,7 +502,7 @@ var input = document.getElementsByClassName("photon-input")[0];
 // =========================================================================
 // 9. LAYER SWITCHER & ATTRIBUZIONI
 // =========================================================================
-var layerSwitcher = new ol.control.LayerSwitcher({ tipLabel: "Layers", target: 'top-right-container' });
+var layerSwitcher = new ol.control.LayerSwitcher({ tipLabel: "Layers" });
 map.addControl(layerSwitcher);
 
 var bottomAttribution = new ol.control.Attribution({ collapsible: false, collapsed: false, className: 'bottom-attribution' });
@@ -547,6 +553,9 @@ if (searchbar) topLeftContainerDiv.appendChild(searchbar);
 
 var searchLayerControl = document.getElementsByClassName('search-layer')[0];
 if (searchLayerControl) topLeftContainerDiv.appendChild(searchLayerControl);
+
+var layerSwitcherControl = document.getElementsByClassName('ol-layerswitcher')[0] || document.getElementsByClassName('layer-switcher')[0];
+if (layerSwitcherControl) topRightContainerDiv.appendChild(layerSwitcherControl);
 
 var scaleLineControl = document.getElementsByClassName('ol-scale-line')[0];
 if (scaleLineControl) {
