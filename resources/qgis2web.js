@@ -1,9 +1,6 @@
 // =========================================================================
 // 1. CONFIGURAZIONE DELLA VISTA E ZOOM SELEZIONABILI (INQUADRATURA TOTALE)
 // =========================================================================
-// Spostiamo il centro visivo leggermente più a Nord e a Ovest (Toscana/Emilia) 
-// per bilanciare la forma allungata dell'Italia e la presenza delle isole.
-var centroMappa = ol.proj.fromLonLat([12.0000, 43.8000]); 
 
 // Confini geografici (Extent) calibrati per contenere l'Italia permettendo lo zoom indietro corretto
 var confiniGradi = [3.0, 34.5, 20.5, 48.0];
